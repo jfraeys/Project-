@@ -35,7 +35,7 @@ whitespace  [ \t]+
 ":="            {return ASSIGN;}
 "="             {return EQ;}
 "<"             {return LT;}
-">"		{return GT;}
+">"		        {return GT;}
 "+"             {return PLUS;}
 "-"             {return MINUS;}
 "*"             {return TIMES;}
@@ -47,9 +47,9 @@ whitespace  [ \t]+
 {identifier}    {return ID;}
 {newline}       {lineno++;}
 {whitespace}    {/* skip whitespace */}
-"{"             { BEGIN CMNT; }
+"/*"             { BEGIN CMNT; }
 .               {return ERROR;}
-<CMNT>"}"       { BEGIN INITIAL; }
+<CMNT>"*/"       { BEGIN INITIAL; }
 <CMNT>.|\n      {/* skip content */}
 
 %%
