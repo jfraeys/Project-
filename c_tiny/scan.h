@@ -1,6 +1,6 @@
 /****************************************************/
 /* File: scan.h                                     */
-/* The scanner interface for the TINY language      */
+/* The scanner interface for the TINY compiler      */
 /****************************************************/
 
 #ifndef _SCAN_H_
@@ -14,6 +14,6 @@ extern char tokenString[MAXTOKENLEN+1];
 
 /* returns the next token in source file
  */
-TokenType getToken(void);
+int getToken(void);
 
 #endif
