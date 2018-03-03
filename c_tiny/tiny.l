@@ -20,20 +20,21 @@ number      {digit}+
 letter      [a-zA-Z]
 identifier  {letter}+
 newline     \n
-whitespace  [ \t]+
+whitespace  [ \t\n]+
 
 %%
 
 "if"            {return IF;}
-"then"          {return THEN;}
 "else"          {return ELSE;}
-"end"           {return END;}
-"repeat"        {return REPEAT;}
-"until"         {return UNTIL;}
-"read"          {return READ;}
-"write"         {return WRITE;}
-":="            {return ASSIGN;}
+"int"           {return INT;}
+"return"        {return RETURN;}
+"void"          {return VOID;}
+"while"         {return WHILE;}
+"<="            {return LET;}
+">="            {return GET;}
 "="             {return EQ;}
+"!="            {return NEQ;}
+"=="            {return OEQ;}
 "<"             {return LT;}
 ">"		        {return GT;}
 "+"             {return PLUS;}
@@ -42,15 +43,20 @@ whitespace  [ \t]+
 "/"             {return OVER;}
 "("             {return LPAREN;}
 ")"             {return RPAREN;}
+"["             {return LBRKT;}
+"]"             {return RBRKT;}
+"{"             {return LBRC;}
+"}"             {return RBRC;}
 ";"             {return SEMI;}
+","             {return COMMA;}
 {number}        {return NUM;}
 {identifier}    {return ID;}
 {newline}       {lineno++;}
 {whitespace}    {/* skip whitespace */}
 "/*"             { BEGIN CMNT; }
-.               {return ERROR;}
 <CMNT>"*/"       { BEGIN INITIAL; }
 <CMNT>.|\n      {/* skip content */}
+.               {return ERROR;}
 
 %%
 
