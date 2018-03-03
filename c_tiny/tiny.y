@@ -74,12 +74,12 @@ stmt        : if_stmt { $$ = $1; }
             | error  { $$ = NULL; }
             ;
 
-if_stmt     : IF exp THEN stmt_seq END
+if_stmt     : IF exp LBRC stmt_seq RBRC
                  { $$ = newStmtNode(IfK);
                    $$->child[0] = $2;
                    $$->child[1] = $4;
                  }
-            | IF exp THEN stmt_seq ELSE stmt_seq END
+            | IF exp LBRC stmt_seq ELSE stmt_seq RBRC
                  { $$ = newStmtNode(IfK);
                    $$->child[0] = $2;
                    $$->child[1] = $4;
@@ -87,6 +87,7 @@ if_stmt     : IF exp THEN stmt_seq END
                  }
             ;
 
+<<<<<<< HEAD
 repeat_stmt : REPEAT stmt_seq UNTIL exp
                  { $$ = newStmtNode(RepeatK);
                    $$->child[0] = $2;
@@ -117,6 +118,22 @@ write_stmt  : WRITE exp
             ;
 
 exp         : exp LT exp 
+=======
+exp         :
+            exp LET exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = LET;
+                 }
+            | exp GET exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = GET;
+                 }
+            | exp LT exp
+>>>>>>> e32518b0d553f586ac7add982a4e5fae9f166efd
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
@@ -134,7 +151,23 @@ exp         : exp LT exp
                    $$->child[1] = $3;
                    $$->attr.op = EQ;
                  }
+<<<<<<< HEAD
             | exp PLUS exp 
+=======
+            | exp NEQ exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = NEQ;
+                 }
+            | exp OEQ exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = OEQ;
+                 }
+            |exp PLUS exp
+>>>>>>> e32518b0d553f586ac7add982a4e5fae9f166efd
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
@@ -158,7 +191,17 @@ exp         : exp LT exp
                    $$->child[1] = $3;
                    $$->attr.op = OVER;
                  }
+            | exp COMMA exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = COMMA;
+                 }
             | LPAREN exp RPAREN
+                 { $$ = $2; }
+            | LBRC exp RBRC
+                 { $$ = $2; }
+            | LBRKT exp RBRKT
                  { $$ = $2; }
             | NUM
                  { $$ = newExpNode(ConstK);
