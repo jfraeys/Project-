@@ -15,9 +15,9 @@ void printToken( int token, const char* tokenString )
   { case IF:
     case ELSE:
     case INT:
-    case RETURN;
-    case VOID;
-    case WHILE;
+    case RETURN:
+    case VOID:
+    case WHILE:
     case LET: fprintf(listing, "<=\n"); break;
     case GET: fprintf(listing, ">=\n"); break;
     case EQ: fprintf(listing,"=\n"); break;
@@ -131,18 +131,21 @@ void printTree( TreeNode * tree )
         case IfK:
           fprintf(listing,"If\n");
           break;
-        case RepeatK:
-          fprintf(listing,"Repeat\n");
+        case ElseK:
+          fprintf(listing,"Else\n");
           break;
-        case AssignK:
-          fprintf(listing,"Assign to: %s\n",tree->attr.name);
+        case IntK:
+          fprintf(listing,"Integer");
           break;
-        case ReadK:
-          fprintf(listing,"Read: %s\n",tree->attr.name);
+        case ReturnK:
+          fprintf(listing,"Return");
           break;
-        case WriteK:
-          fprintf(listing,"Write\n");
+        case VoidK:
+          fprintf(listing,"Void\n");
           break;
+      case WhileK:
+        fprintf(listing,"Void\n");
+        break;
         default:
           fprintf(listing,"Unknown ExpNode kind\n");
           break;
