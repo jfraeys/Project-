@@ -32,17 +32,17 @@ int yyerror(char * message)
 static int yylex(void)
 { return getToken(); }
 
-TreeNode * parse(void) { 
+TreeNode * parse(void) {
   yyparse();
   return savedTree;
 }
 
 %}
 
-%token IF THEN ELSE END REPEAT UNTIL READ WRITE
-%token ID NUM 
-%token ASSIGN EQ LT GT PLUS MINUS TIMES OVER LPAREN RPAREN SEMI
-%token ERROR 
+%token IF ELSE INT RETURN VOID WHILE
+%token ID NUM
+%token EQ NEQ OEQ LET GET LT GT PLUS MINUS TIMES OVER LPAREN RPAREN LBRC RBRC LBRKT RBRKT SEMI COMMA
+%token ERROR
 
 %nonassoc EQ LT GT
 %left PLUS MINUS
@@ -51,7 +51,7 @@ TreeNode * parse(void) {
 %% /* Grammar for TINY */
 
 program     : stmt_seq
-                 { savedTree = $1;} 
+                 { savedTree = $1;}
             ;
 
 stmt_seq    : stmt_seq SEMI stmt
@@ -67,19 +67,16 @@ stmt_seq    : stmt_seq SEMI stmt
             ;
 
 stmt        : if_stmt { $$ = $1; }
-            | repeat_stmt { $$ = $1; }
-            | assign_stmt { $$ = $1; }
-            | read_stmt { $$ = $1; }
-            | write_stmt { $$ = $1; }
+            | while_stmt { $$ = $1; }
             | error  { $$ = NULL; }
             ;
 
-if_stmt     : IF exp THEN stmt_seq END
+if_stmt     : IF exp LBRC stmt_seq RBRC
                  { $$ = newStmtNode(IfK);
                    $$->child[0] = $2;
                    $$->child[1] = $4;
                  }
-            | IF exp THEN stmt_seq ELSE stmt_seq END
+            | IF exp LBRC stmt_seq ELSE stmt_seq RBRC
                  { $$ = newStmtNode(IfK);
                    $$->child[0] = $2;
                    $$->child[1] = $4;
@@ -87,42 +84,32 @@ if_stmt     : IF exp THEN stmt_seq END
                  }
             ;
 
-repeat_stmt : REPEAT stmt_seq UNTIL exp
-                 { $$ = newStmtNode(RepeatK);
-                   $$->child[0] = $2;
-                   $$->child[1] = $4;
-                 }
-            ;
+while_stmt : WHILE exp LBRC stmt_seq RBRC
+            { $$ = newStmtNode(WhileK);
+              $$->child[0] = $2;
+              $$->child[1] = $4;
+            }
 
-assign_stmt : ID { savedName = copyString(tokenString);
-                   savedLineNo = lineno; }
-              ASSIGN exp
-                 { $$ = newStmtNode(AssignK);
-                   $$->child[0] = $4;
-                   $$->attr.name = savedName;
-                   $$->lineno = savedLineNo;
+exp         :
+            exp LET exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = LET;
                  }
-            ;
-
-read_stmt   : READ ID
-                 { $$ = newStmtNode(ReadK);
-                   $$->attr.name = copyString(tokenString);
+            | exp GET exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = GET;
                  }
-            ;
-
-write_stmt  : WRITE exp
-                 { $$ = newStmtNode(WriteK);
-                   $$->child[0] = $2;
-                 }
-            ;
-
-exp         : exp LT exp 
+            | exp LT exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
                    $$->attr.op = LT;
                  }
-            | exp GT exp 
+            | exp GT exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
@@ -134,7 +121,19 @@ exp         : exp LT exp
                    $$->child[1] = $3;
                    $$->attr.op = EQ;
                  }
-            | exp PLUS exp 
+            | exp NEQ exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = NEQ;
+                 }
+            | exp OEQ exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = OEQ;
+                 }
+            |exp PLUS exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
@@ -145,8 +144,8 @@ exp         : exp LT exp
                    $$->child[0] = $1;
                    $$->child[1] = $3;
                    $$->attr.op = MINUS;
-                 } 
-            | exp TIMES exp 
+                 }
+            | exp TIMES exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
@@ -158,7 +157,17 @@ exp         : exp LT exp
                    $$->child[1] = $3;
                    $$->attr.op = OVER;
                  }
+            | exp COMMA exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = COMMA;
+                 }
             | LPAREN exp RPAREN
+                 { $$ = $2; }
+            | LBRC exp RBRC
+                 { $$ = $2; }
+            | LBRKT exp RBRKT
                  { $$ = $2; }
             | NUM
                  { $$ = newExpNode(ConstK);
@@ -170,4 +179,3 @@ exp         : exp LT exp
                  }
             | error { $$ = NULL; }
             ;
-

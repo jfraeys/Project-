@@ -2,6 +2,7 @@
 /* File: stack.c                                    */
 /* Implementation of a stack data structure of      */
 /* strings.                                         */
+/* Jeremie Fraeys and Joel Klemens                  */
 /****************************************************/
 
 #include "stack.h"
