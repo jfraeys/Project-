@@ -144,7 +144,7 @@ void printTree( TreeNode * tree )
           fprintf(listing,"Void\n");
           break;
       case WhileK:
-        fprintf(listing,"Void\n");
+        fprintf(listing,"While\n");
         break;
         default:
           fprintf(listing,"Unknown ExpNode kind\n");
