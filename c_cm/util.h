@@ -1,7 +1,6 @@
 /****************************************************/
 /* File: util.h                                     */
 /* Utility functions for the TINY compiler          */
-/* Jeremie Fraeys and Joel Klemens                  */
 /****************************************************/
 
 #ifndef _UTIL_H_

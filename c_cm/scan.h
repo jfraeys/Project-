@@ -1,7 +1,6 @@
 /****************************************************/
 /* File: scan.h                                     */
 /* The scanner interface for the TINY compiler      */
-/* Jeremie Fraeys and Joel Klemens                  */
 /****************************************************/
 
 #ifndef _SCAN_H_

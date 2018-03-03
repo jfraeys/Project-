@@ -1,7 +1,6 @@
 /****************************************************/
 /* File: main.c                                     */
-/* Main program for C- Compiler                     */
-/* Jeremie Fraeys and Joel Klemens                  */
+/* Main program for TINY compiler                   */
 /****************************************************/
 
 #include "globals.h"

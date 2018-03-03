@@ -1,7 +1,6 @@
 /****************************************************/
 /* File: tiny.y                                     */
 /* The TINY Yacc/Bison specification file           */
-/* Jeremie Fraeys and Joel Klemens                  */
 /****************************************************/
 %{
 #define YYPARSER /* distinguishes Yacc output from other code files */
@@ -42,7 +41,7 @@ TreeNode * parse(void) {
 
 %token IF ELSE INT RETURN VOID WHILE
 %token ID NUM
-%token LET GET EQ NEQ OEQ LT GT PLUS MINUS TIMES OVER LPAREN RPAREN  LBRKT RBRKT LBRC RBRC SEMI COMMA
+%token EQ NEQ OEQ LET GET LT GT PLUS MINUS TIMES OVER LPAREN RPAREN LBRC RBRC LBRKT RBRKT SEMI COMMA
 %token ERROR
 
 %nonassoc EQ LT GT
@@ -68,15 +67,16 @@ stmt_seq    : stmt_seq SEMI stmt
             ;
 
 stmt        : if_stmt { $$ = $1; }
+            | while_stmt { $$ = $1; }
             | error  { $$ = NULL; }
             ;
 
-if_stmt     : IF exp THEN stmt_seq END
+if_stmt     : IF exp LBRC stmt_seq RBRC
                  { $$ = newStmtNode(IfK);
                    $$->child[0] = $2;
                    $$->child[1] = $4;
                  }
-            | IF exp THEN stmt_seq ELSE stmt_seq END
+            | IF exp LBRC stmt_seq ELSE stmt_seq RBRC
                  { $$ = newStmtNode(IfK);
                    $$->child[0] = $2;
                    $$->child[1] = $4;
@@ -84,7 +84,26 @@ if_stmt     : IF exp THEN stmt_seq END
                  }
             ;
 
-exp         : exp LT exp
+while_stmt : WHILE exp LBRC stmt_seq RBRC
+            { $$ = newStmtNode(WhileK);
+              $$->child[0] = $2;
+              $$->child[1] = $4;
+            }
+
+exp         :
+            exp LET exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = LET;
+                 }
+            | exp GET exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = GET;
+                 }
+            | exp LT exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
@@ -102,7 +121,19 @@ exp         : exp LT exp
                    $$->child[1] = $3;
                    $$->attr.op = EQ;
                  }
-            | exp PLUS exp
+            | exp NEQ exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = NEQ;
+                 }
+            | exp OEQ exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = OEQ;
+                 }
+            |exp PLUS exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
@@ -126,7 +157,17 @@ exp         : exp LT exp
                    $$->child[1] = $3;
                    $$->attr.op = OVER;
                  }
+            | exp COMMA exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = COMMA;
+                 }
             | LPAREN exp RPAREN
+                 { $$ = $2; }
+            | LBRC exp RBRC
+                 { $$ = $2; }
+            | LBRKT exp RBRKT
                  { $$ = $2; }
             | NUM
                  { $$ = newExpNode(ConstK);

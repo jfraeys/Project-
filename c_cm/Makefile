@@ -1,9 +1,5 @@
-#*************************************/
-#   Jeremie Fraeys                   */
-#       and                          */
-#   Joel Klemens                     */
-#*************************************/
-# Makefile for C- Language 
+#
+# Makefile for TINY
 # Using flex and yacc
 #
 

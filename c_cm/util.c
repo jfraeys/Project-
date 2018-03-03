@@ -2,7 +2,6 @@
 /* File: util.c                                     */
 /* Utility function implementation                  */
 /* for the TINY compiler                            */
-/* Jeremie Fraeys and Joel Klemens                  */
 /****************************************************/
 
 #include "globals.h"
@@ -16,9 +15,9 @@ void printToken( int token, const char* tokenString )
   { case IF:
     case ELSE:
     case INT:
-    case RETURN;
-    case VOID;
-    case WHILE;
+    case RETURN:
+    case VOID:
+    case WHILE:
     case LET: fprintf(listing, "<=\n"); break;
     case GET: fprintf(listing, ">=\n"); break;
     case EQ: fprintf(listing,"=\n"); break;
@@ -28,12 +27,7 @@ void printToken( int token, const char* tokenString )
     case GT: fprintf(listing,">\n"); break;
     case LPAREN: fprintf(listing,"(\n"); break;
     case RPAREN: fprintf(listing,")\n"); break;
-    case LBRKT: fprintf(listing,"[\n"); break;
-    case RBRKT: fprintf(listing,"]\n"); break;
-    case LBRC: fprintf(listing,"{\n"); break;
-    case RBRC: fprintf(listing,"}\n"); break;
     case SEMI: fprintf(listing,";\n"); break;
-    case COMMA: fprintf(listing,",\n"); break;
     case PLUS: fprintf(listing,"+\n"); break;
     case MINUS: fprintf(listing,"-\n"); break;
     case TIMES: fprintf(listing,"*\n"); break;
@@ -132,18 +126,21 @@ void printTree( TreeNode * tree )
         case IfK:
           fprintf(listing,"If\n");
           break;
-        case RepeatK:
-          fprintf(listing,"Repeat\n");
+        case ElseK:
+          fprintf(listing,"Else\n");
           break;
-        case AssignK:
-          fprintf(listing,"Assign to: %s\n",tree->attr.name);
+        case IntK:
+          fprintf(listing,"Integer");
           break;
-        case ReadK:
-          fprintf(listing,"Read: %s\n",tree->attr.name);
+        case ReturnK:
+          fprintf(listing,"Return");
           break;
-        case WriteK:
-          fprintf(listing,"Write\n");
+        case VoidK:
+          fprintf(listing,"Void\n");
           break;
+      case WhileK:
+        fprintf(listing,"While\n");
+        break;
         default:
           fprintf(listing,"Unknown ExpNode kind\n");
           break;

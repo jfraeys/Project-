@@ -2,7 +2,6 @@
 /* File: globals.h                                  */
 /* Global types and vars for TINY compiler          */
 /* must come before other include files             */
-/* Jeremie Fraeys and Joel Klemens                  */
 /****************************************************/
 
 #ifndef _GLOBALS_H_
@@ -31,7 +30,7 @@ extern int lineno; /* source line number for listing */
 /**************************************************/
 
 typedef enum {StmtK,ExpK} NodeKind;
-typedef enum {IfK,RepeatK,AssignK,ReadK,WriteK} StmtKind;
+typedef enum {IfK, ElseK, IntK, ReturnK, VoidK, WhileK} StmtKind;
 typedef enum {OpK,ConstK,IdK} ExpKind;
 
 /* ExpType is used for type checking */

@@ -1,7 +1,6 @@
 /****************************************************/
 /* File: parse.h                                    */
 /* The parser interface for the TINY compiler       */
-/* Jeremie Fraeys and Joel Klemens                  */
 /****************************************************/
 
 #ifndef _PARSE_H_
