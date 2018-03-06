@@ -18,6 +18,10 @@ TreeNode * newStmtNode(StmtKind);
  */
 TreeNode * newExpNode(ExpKind);
 
+/* creates a new expression node for syntax tree construction
+ */
+TreeNode * newDecNode(DecKind);
+
 /* allocates and makes a new copy of an existing string
  */
 char * copyString( char * );

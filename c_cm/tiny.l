@@ -21,7 +21,7 @@ number      {digit}+
 letter      [a-zA-Z]
 identifier  {letter}+
 newline     \n
-whitespace  [ \t\n]+
+whitespace  [ \t]+
 
 %%
 
@@ -33,9 +33,9 @@ whitespace  [ \t\n]+
 "while"         {return WHILE;}
 "<="            {return LET;}
 ">="            {return GET;}
-"="             {return EQ;}
-"!="            {return NEQ;}
-"=="            {return OEQ;}
+"="             {return ASSIGN;}
+"!="            {return NQ;}
+"=="            {return EQ;}
 "<"             {return LT;}
 ">"		        {return GT;}
 "+"             {return PLUS;}
@@ -54,10 +54,11 @@ whitespace  [ \t\n]+
 {identifier}    {return ID;}
 {newline}       {lineno++;}
 {whitespace}    {/* skip whitespace */}
-"/*"             { BEGIN CMNT; }
-<CMNT>"*/"       { BEGIN INITIAL; }
-<CMNT>.|\n      {/* skip content */}
 .               {return ERROR;}
+"/*"             { BEGIN CMNT; }
+<CMNT>"*/"       { BEGIN    INITIAL; }
+<CMNT>.          {/* skip content */}
+<CMNT>"\n"      {lineno++;}
 
 %%
 

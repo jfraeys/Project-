@@ -44,7 +44,7 @@ int main( int argc, char * argv[] )
     exit(1);
   }
   listing = stdout; /* send listing to screen */
-  fprintf(listing,"\nTINY COMPILATION: %s\n",pgm);
+  fprintf(listing,"\nCMINUS COMPILATION: %s\n",pgm);
 #if NO_PARSE
   while( (ttype=getToken())!= 0 )
     printToken( ttype, tokenString );
@@ -58,4 +58,3 @@ int main( int argc, char * argv[] )
   fclose(source);
   return 0;
 }
-

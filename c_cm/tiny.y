@@ -1,6 +1,7 @@
 /****************************************************/
 /* File: tiny.y                                     */
-/* The TINY Yacc/Bison specification file           */
+/* The C Minus Yacc/Bison specification file        */
+/* Jeremie Fraeys and Joel Klemens                  */
 /****************************************************/
 %{
 #define YYPARSER /* distinguishes Yacc output from other code files */
@@ -11,9 +12,11 @@
 #include "parse.h"
 
 #define YYSTYPE TreeNode *
-static char * savedName; /* for use in assignments */
-static int savedLineNo;  /* ditto */
+static char * savedName;
+static int savedLineNo;
 static TreeNode * savedTree; /* stores syntax tree for later return */
+static int savedNumber;
+static char * savedName;
 
 extern int yychar;
 
@@ -41,67 +44,174 @@ TreeNode * parse(void) {
 
 %token IF ELSE INT RETURN VOID WHILE
 %token ID NUM
-%token EQ NEQ OEQ LET GET LT GT PLUS MINUS TIMES OVER LPAREN RPAREN LBRC RBRC LBRKT RBRKT SEMI COMMA
+%token LET GET EQ NQ ASSIGN LT GT PLUS MINUS TIMES OVER LPAREN RPAREN  LBRKT RBRKT LBRC RBRC SEMI COMMA
 %token ERROR
 
-%nonassoc EQ LT GT
-%left PLUS MINUS
-%left TIMES OVER
+%% /* Grammar for C Minus */
 
-%% /* Grammar for TINY */
-
-program     : stmt_seq
+program     : dec_list
                  { savedTree = $1;}
             ;
-
-stmt_seq    : stmt_seq SEMI stmt
-                 { YYSTYPE t = $1;
-                   if (t != NULL)
-                   { while (t->sibling != NULL)
-                        t = t->sibling;
-                     t->sibling = $3;
+dec_list    : dec_list dec
+                 { YYSTYPE tree = $1;
+                   if(tree != NULL){
+                     while(tree->sibling != NULL){
+                       tree = tree->sibling;
+                     }
+                     tree->sibling = $2;
+                     $$ = $1;
+                   }else{
+                      $$ = $2;
+                   }
+                 }
+            | dec { $$ = $1; }
+            ;
+dec         : var_dec { $$ = $1; }
+            | fun_dec { $$ = $1; }
+            ;
+saveNumber  : NUM
+                  {savedNumber = atoi(tokenString);
+                    savedLineNo = lineno;
+                  }
+            ;
+saveName   : ID
+                  { savedName = copyString(tokenString);
+                    savedLineNo = lineno;
+                  }
+            ;
+type_spec   : INT { $$ = newDecNode(VarK);
+                    $$->attr.name = "int";}
+            | VOID{ $$ = newDecNode(VarK);
+                    $$->attr.name = "void";}
+            ;
+var_dec     : type_spec saveNumber SEMI
+                  { $$ = newDecNode(VarK);
+                    $$->child[0] = $1;
+                    $$->lineno = lineno;
+                    $$->attr.name = savedName;
+                  }
+            | type_spec saveName LBRKT saveNumber RBRKT SEMI
+                  { $$ = newDecNode(VarK);
+                    $$->child[0] = $1;
+                    $$->lineno = lineno;
+                    $$->attr.name = savedName;
+                  }
+            ;
+fun_dec     : type_spec saveName
+                  { $$ = newDecNode(FuncK);
+                    $$->lineno = lineno;
+                    $$->attr.name = savedName;
+                  }
+              LPAREN params RPAREN comp_stmt
+                 { $$ = $3;
+                   $$->child[0] = $1;
+                   $$->child[1] = $5;
+                   $$->child[2] = $7;
+                 }
+            ;
+params      : param_list  { $$ = $1; }
+            | VOID
+                 { $$ = newDecNode(ParamK);
+                   $$->type = VOID;
+                 }
+param_list  : param_list COMMA param
+                 { YYSTYPE tree = $1;
+                   if (tree != NULL)
+                   { while (tree->sibling != NULL)
+                        tree = tree->sibling;
+                     tree->sibling = $3;
                      $$ = $1; }
-                     else $$ = $3;
+                    else $$ = $3;
                  }
-            | stmt  { $$ = $1; }
+            | param { $$ = $1; };
+param       : type_spec saveName
+                 { $$ = newDecNode(ParamK);
+                   $$->child[0] = $1;
+                   $$->attr.name = savedName;
+                 }
+            | type_spec saveName LBRKT RBRKT
+                 { $$ = newDecNode(ParamK);
+                   $$->child[0] = $1;
+                   $$->attr.name = savedName;
+                 }
             ;
-
-stmt        : if_stmt { $$ = $1; }
-            | while_stmt { $$ = $1; }
-            | error  { $$ = NULL; }
-            ;
-
-if_stmt     : IF exp LBRC stmt_seq RBRC
-                 { $$ = newStmtNode(IfK);
+comp_stmt   : LBRC local_decs stmt_list RBRC
+                 { $$ = newStmtNode(CompK);
                    $$->child[0] = $2;
-                   $$->child[1] = $4;
-                 }
-            | IF exp LBRC stmt_seq ELSE stmt_seq RBRC
-                 { $$ = newStmtNode(IfK);
-                   $$->child[0] = $2;
-                   $$->child[1] = $4;
-                   $$->child[2] = $6;
+                   $$->child[1] = $3;
                  }
             ;
-
-while_stmt : WHILE exp LBRC stmt_seq RBRC
-            { $$ = newStmtNode(WhileK);
-              $$->child[0] = $2;
-              $$->child[1] = $4;
-            }
-
-exp         :
-            exp LET exp
+local_decs : local_decs var_dec
+                 { YYSTYPE tree = $1;
+                   if (tree != NULL)
+                   { while (tree->sibling != NULL)
+                        tree = tree->sibling;
+                     tree->sibling = $2;
+                     $$ = $1; }
+                     else $$ = $2;
+                 }
+            |    { $$ = NULL; }
+            ;
+stmt_list   : stmt_list stmt
+                  { YYSTYPE tree = $1;
+                   if (tree != NULL)
+                   { while (tree->sibling != NULL)
+                        tree = tree->sibling;
+                     tree->sibling = $2;
+                     $$ = $1;
+                    }
+                     else $$ = $2;
+                  }
+            | { $$ = NULL; }
+            ;
+stmt        : exp_stmt { $$ = $1; }
+            | comp_stmt { $$ = $1; }
+            | sel_stmt { $$ = $1; }
+            | iter_stmt { $$ = $1; }
+            | ret_stmt { $$ = $1; }
+            ;
+exp_stmt    : exp SEMI { $$ = $1; }
+            | SEMI { $$ = NULL; }
+            ;
+sel_stmt    : IF LPAREN exp RPAREN stmt
+                 { $$ = newStmtNode(IfK);
+                   $$->child[0] = $3;
+                   $$->child[1] = $5;
+                   $$->child[2] = NULL;
+                 }
+            | IF LPAREN exp RPAREN stmt ELSE stmt
+                 { $$ = newStmtNode(IfK);
+                   $$->child[0] = $3;
+                   $$->child[1] = $5;
+                   $$->child[2] = $7;
+                 }
+            ;
+iter_stmt   : WHILE LPAREN exp RPAREN stmt
+                 { $$ = newStmtNode(WhileK);
+                   $$->child[0] = $3;
+                   $$->child[1] = $5;
+                 }
+            ;
+ret_stmt    : RETURN SEMI
+                 { $$ = newStmtNode(ReturnK);
+                   $$->child[0] = NULL;
+                 }
+            | RETURN exp SEMI
+                 { $$ = newStmtNode(ReturnK);
+                   $$->child[0] = $2;
+                 }
+            ;
+exp         : exp ASSIGN exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = ASSIGN;
+                 }
+            |exp LET exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
                    $$->attr.op = LET;
-                 }
-            | exp GET exp
-                 { $$ = newExpNode(OpK);
-                   $$->child[0] = $1;
-                   $$->child[1] = $3;
-                   $$->attr.op = GET;
                  }
             | exp LT exp
                  { $$ = newExpNode(OpK);
@@ -115,25 +225,25 @@ exp         :
                    $$->child[1] = $3;
                    $$->attr.op = GT;
                  }
+            | exp GET exp
+                 { $$ = newExpNode(OpK);
+                   $$->child[0] = $1;
+                   $$->child[1] = $3;
+                   $$->attr.op = GET;
+                 }
             | exp EQ exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
                    $$->attr.op = EQ;
                  }
-            | exp NEQ exp
+            | exp NQ exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
-                   $$->attr.op = NEQ;
+                   $$->attr.op = NQ;
                  }
-            | exp OEQ exp
-                 { $$ = newExpNode(OpK);
-                   $$->child[0] = $1;
-                   $$->child[1] = $3;
-                   $$->attr.op = OEQ;
-                 }
-            |exp PLUS exp
+            | exp PLUS exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
                    $$->child[1] = $3;
@@ -157,25 +267,32 @@ exp         :
                    $$->child[1] = $3;
                    $$->attr.op = OVER;
                  }
-            | exp COMMA exp
-                 { $$ = newExpNode(OpK);
-                   $$->child[0] = $1;
-                   $$->child[1] = $3;
-                   $$->attr.op = COMMA;
+            | LPAREN exp RPAREN { $$ = $2; }
+            | saveName
+                  { $$ = newExpNode(CallK);
+                    $$->attr.name = savedName;
+                  }
+              LPAREN args RPAREN
+                 { $$ = $2;
+                   $$->child[0] = $4;
                  }
-            | LPAREN exp RPAREN
-                 { $$ = $2; }
-            | LBRC exp RBRC
-                 { $$ = $2; }
-            | LBRKT exp RBRKT
-                 { $$ = $2; }
             | NUM
                  { $$ = newExpNode(ConstK);
                    $$->attr.val = atoi(tokenString);
                  }
-            | ID { $$ = newExpNode(IdK);
-                   $$->attr.name =
-                         copyString(tokenString);
-                 }
-            | error { $$ = NULL; }
             ;
+args        : arg_list { $$ = $1; }
+            | /* empty */ { $$ = NULL; }
+            ;
+arg_list    : arg_list COMMA exp
+                 { YYSTYPE tree = $1;
+                   if (tree != NULL)
+                   { while (tree->sibling != NULL)
+                        tree = tree->sibling;
+                     tree-> sibling = $3;
+                     $$ = $1; }
+                     else $$ = $3;
+                 }
+            | exp { $$ = $1; }
+            ;
+%%
