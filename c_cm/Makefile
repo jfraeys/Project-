@@ -5,12 +5,12 @@
 
 CC = gcc
 
-CFLAGS = 
+CFLAGS =
 
 OBJS = y.tab.o lex.yy.o util.o main.o
 
 tiny: $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o tiny -ly -ll
+	$(CC) $(CFLAGS) $(OBJS) -o cminus -ly -ll
 
 main.o: main.c globals.h util.h scan.h parse.h
 	$(CC) $(CFLAGS) -c main.c
@@ -29,6 +29,9 @@ y.tab.c: tiny.y
 
 y.tab.o: y.tab.c globals.h util.h scan.h parse.h
 	$(CC) $(CFLAGS) -c y.tab.c
+
+run:
+	./cminus $(ARGS)
 
 clean:
 	rm -f tiny $(OBJS) lex.yy.c y.tab.h y.tab.c y.output
