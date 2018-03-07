@@ -1,8 +1,0 @@
-/*This is a test*/
-void main (int a){
-     int x[5];
-
-     if(x != 5){
-     x = x + 1;
-     }
-}

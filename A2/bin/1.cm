@@ -1,5 +1,5 @@
-/* A program to perform selection sort 
-   on a 10 element array */
+/* Test program #1 */
+/* This program should compile with no errors, it is based off of the sort.cm file provided from the professor */ 
 
 int x[10];
 
@@ -46,4 +46,4 @@ void main(void) {
     output(x[i]);
     i = i + 1;
   }
-}
+} 

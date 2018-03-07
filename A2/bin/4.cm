@@ -1,0 +1,17 @@
+/* Test program #4 */
+/* In this test program there is an error where a variable is declared as a void */ 
+
+int gcd(int u, int v) {
+  if (v == 0) return u;
+  else return gcd(v, u - u/v*v);
+}
+
+void main(void) {
+  int x; int y;
+  /* void is not a declaration type */ 
+  void z; /* here: 12 */
+  void thisIsWrong = 5;  /* here: 13 */ 
+  x = input();
+  y = input();
+  output(gcd(x, y));
+}
