@@ -141,8 +141,8 @@ param       : type_spec saveName
                      yyerror("declare parameter as void");
                    }else{
                      $$ = newDecNode(ParamK);
-                     $$->child[0] = $1;
-                     $$->attr.name = savedName;
+                     $$->child[0] = $2;
+                     $$->attr.name = type;
                    }
                  }
             | type_spec saveName LBRKT RBRKT
@@ -150,8 +150,8 @@ param       : type_spec saveName
                      yyerror("declare parameter as void");
                    }else{
                      $$ = newDecNode(ParamK);
-                     $$->child[0] = $1;
-                     $$->attr.name = savedName;
+                     $$->child[0] = $2;
+                     $$->attr.name = type;
                    }
                  }
             ;
@@ -221,6 +221,13 @@ ret_stmt    : RETURN SEMI
                    $$->child[0] = $2;
                  }
             ;
+var         : saveName { $$ = newExpNode(IdK);
+                         $$->attr.name = savedName;}
+            | saveName LBRKT exp RBRKT {
+                        $$ = newExpNode(IdK);
+                        $$->attr.name = savedName;
+                        $$->child[0] = $3;}
+            ;
 exp         : exp ASSIGN exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
@@ -289,6 +296,7 @@ exp         : exp ASSIGN exp
                  }
             | LPAREN exp RPAREN { $$ = $2; }
             | call {$$ = $1; }
+            | var {$$ = $1; }
             | saveNumber
                  { $$ = newExpNode(ConstK);
                    $$->attr.val = atoi(tokenString);
