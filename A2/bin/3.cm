@@ -1,14 +1,14 @@
-/* Test program #3 */ 
+/* Test program #3 */
 /* In this test program there are simple syntax erros such a missing semi colons and braces */
 
-int gcd(int u, int v { /* on this line: 4 */ 
+int gcd(int u, int v { /* no paranthesis on this line: 4 */
   if (v == 0) return u;
-  else return gcd(v, u - u/v*v);
+  else return gcd(v, u);
 }
 
 void main(void) {
   int x; int y;
-  x = input() /* here: 11 */ 
-  y = input() /* here: 12 */
+  x = input() /* missing semi here: 11 */
+  y = input() /* missing semi here: 12 */
   output(gcd(x, y));
 }
