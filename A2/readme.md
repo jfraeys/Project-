@@ -25,6 +25,8 @@ tree will be displayed on the screen.
 
 ---------ADDITIONAL INFORMATION---------
 
+The test [1, 2, 3, 4, 5].cm files are in the bin folder.
+
    There is a parameter "NO_PARSE" in "main.c".  Its default setting is
 FALSE, and the "make" will generate a parser using this value.  If we change
 the value to TRUE, the "make" will only generate a scanner.
