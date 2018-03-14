@@ -34,4 +34,4 @@ run:
 	./cminus $(ARGS)
 
 clean:
-	rm -f tiny $(OBJS) lex.yy.c y.tab.h y.tab.c y.output
+	rm -f cminus $(OBJS) lex.yy.c y.tab.h y.tab.c y.output
