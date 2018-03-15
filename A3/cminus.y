@@ -138,7 +138,7 @@ param_list  : param_list COMMA param
             | param { $$ = $1; };
 param       : type_spec saveName
                  { if(type == "void"){
-                     yyerror("declare parameter as void");
+                     yyerror("declare variable as void");
                    }else{
                      $$ = newDecNode(ParamK);
                      $$->child[0] = $2;
