@@ -86,30 +86,30 @@ var_dec     : type_spec saveName SEMI
                       yyerror("declare variable as void");
                     }else{
                       $$ = newDecNode(VarK);
-                      $$->child[0] = $2;
+                      $$->child[0] = $1;
                       $$->lineno = lineno;
-                      $$->attr.name = type;
+                      $$->attr.name = savedName;
                     }
                   }
             | type_spec saveName LBRKT saveNumber RBRKT SEMI
                   { if(type == "void"){
-                      yyerror("declare variable as void");
-                    }else{$$ = newDecNode(VarK);
-                      $$->child[0] = $2;
-                      $$->child[1] = $4;
+                      yyerror("declare array  as void");
+                    }else{$$ = newDecNode(ArrK);
+                      $$->child[0] = $1;
                       $$->lineno = lineno;
-                      $$->attr.name = type;
+                      $$->attr.arr.name = savedName;
+                      $$->attr.arr.size = savedNumber;
                     }
                   }
             ;
 fun_dec     : type_spec saveName
                   { $$ = newDecNode(FuncK);
                     $$->lineno = lineno;
-                    $$->attr.name = type;
+                    $$->child[0]=$1;
+                     $$->attr.name = savedName;
                   }
               LPAREN params RPAREN comp_stmt
                  { $$ = $3;
-                   $$->child[0] = $2;
                    $$->child[1] = $5;
                    $$->child[2] = $7;
                  }

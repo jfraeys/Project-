@@ -52,7 +52,7 @@ void printToken( int token, const char* tokenString )
           "ERROR: %s\n",tokenString);
       break;
     default: /* should never happen */
-      fprintf(listing,"Unknown token: %s\n",tokenString);
+      break;
   }
 }
 
@@ -151,7 +151,7 @@ void printTree( TreeNode * tree )
           fprintf(listing,"If\n");
           break;
         case ReturnK:
-          fprintf(listing,"Return");
+          fprintf(listing,"Return\n");
           break;
       case WhileK:
         fprintf(listing,"While\n");
@@ -176,6 +176,10 @@ void printTree( TreeNode * tree )
         case IdK:
           fprintf(listing,"Id: %s\n",tree->attr.name);
           break;
+        case ArrIdK:
+          fprintf(listing, "ArrId: %s\n", tree->attr.arr.name);
+        case SizeK:
+          fprintf(listing, "Size: %d\n", tree->attr.arr.size);
         default:
           fprintf(listing,"Unknown ExpNode kind\n");
           break;
@@ -187,6 +191,10 @@ void printTree( TreeNode * tree )
           fprintf(listing,"Function declarion: %s\n", tree->attr.name);
           printToken(tree->attr.op,"\0");
           break;
+        case ArrK:
+            fprintf(listing,"Array declarion: %s, size: [%d]\n", tree->attr.arr.name, tree->attr.arr.size);
+            printToken(tree->attr.op,"\0");
+            break;
         case VarK:
           fprintf(listing,"Variable declarion: %s\n",tree->attr.name);
           break;
