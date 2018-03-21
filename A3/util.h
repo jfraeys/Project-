@@ -22,6 +22,18 @@ TreeNode * newExpNode(ExpKind);
  */
 TreeNode * newDecNode(DecKind);
 
+/* creates a new expression node for syntax tree construction
+ */
+TreeNode * newParamNode(ParamKind);
+
+/* creates a new expression node for syntax tree construction
+ */
+TreeNode * newTypeNode(TypeKind);
+
+/* creates a new expression node for syntax tree construction
+ */
+TreeNode * newErrNode();
+
 /* allocates and makes a new copy of an existing string
  */
 char * copyString( char * );

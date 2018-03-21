@@ -20,6 +20,8 @@
 #define TRUE 1
 #endif
 
+typedef int TokenType;
+
 extern FILE* source; /* source code text file */
 extern FILE* listing; /* listing output text file */
 extern FILE* code; /* code text file for TM simulator */
@@ -29,12 +31,15 @@ extern int lineno; /* source line number for listing */
 /***********   Syntax tree for parsing ************/
 /**************************************************/
 
-typedef enum {StmtK, ExpK, DecK} NodeKind;
+typedef enum {StmtK, ExpK, DecK, ParamK, TypeK} NodeKind;
 typedef enum {CompK, IfK, ReturnK, WhileK} StmtKind;
-typedef enum {OpK, ConstK, IdK, SubsK, CallK, ArrIdK, SizeK} ExpKind;
-typedef enum {FuncK, VarK, ArrK, ParamK} DecKind;
+typedef enum {OpK, ConstK, IdK, SubsK, CallK, ArrIdK} ExpKind;
+typedef enum {FuncK, VarK, ArrK} DecKind;
+typedef enum {ArrParamK, NonArrParamK} ParamKind;
+typedef enum {TypeNameK} TypeKind;
 
 typedef struct arrAttr{
+    TokenType type;
     char * name;
     int size;
 }ArrAttr;
@@ -51,11 +56,15 @@ typedef struct treeNode
      NodeKind nodekind;
      union { StmtKind stmt;
              ExpKind exp;
-             DecKind dec;} kind;
+             DecKind dec;
+             ParamKind param;
+             TypeKind type;} kind;
      union { int op;
+             TokenType type;
              int val;
              char * name;
-             ArrAttr arr;} attr;
+             ArrAttr arr;
+             struct ScopeRec * scope;} attr;
      ExpType type; /* for type checking of exps */
    } TreeNode;
 
@@ -84,5 +93,7 @@ extern int TraceAnalyze;
  * to the TM code file as code is generated
  */
 extern int TraceCode;
+
+extern int Error;
 
 #endif

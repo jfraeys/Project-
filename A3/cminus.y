@@ -27,6 +27,7 @@ int yyerror(char * message)
 { fprintf(listing,"Syntax error at line %d: %s\n",lineno,message);
   fprintf(listing,"Current token: ");
   printToken(yychar,tokenString);
+
   return 0;
 }
 
@@ -47,6 +48,10 @@ TreeNode * parse(void) {
 %token ID NUM
 %token LET GET EQ NQ ASSIGN LT GT PLUS MINUS TIMES OVER LPAREN RPAREN  LBRKT RBRKT LBRC RBRC SEMI COMMA
 %token ERROR
+
+%nonassoc LT LET GT GET EQ NQ
+%left PLUS MINUS
+%left TIMES OVER
 
 %% /* Grammar for C Minus */
 
@@ -70,62 +75,57 @@ dec_list    : dec_list dec
 dec         : var_dec { $$ = $1; }
             | fun_dec { $$ = $1; }
             ;
+saveName   : ID
+                  { $$ = newExpNode(IdK);
+                    savedName = copyString(tokenString);
+                    $$->attr.name = savedName;
+                  }
+            ;
 saveNumber  : NUM
                   {savedNumber = atoi(tokenString);
                     savedLineNo = lineno;
                   }
             ;
-saveName   : ID
-                  { $$ = newExpNode(IdK);
-                  savedName = copyString(tokenString);
-                    $$->attr.name = savedName;
-                  }
-            ;
 var_dec     : type_spec saveName SEMI
-                  { if(type == "void"){
-                      yyerror("declare variable as void");
-                    }else{
-                      $$ = newDecNode(VarK);
+                  {   $$ = newDecNode(VarK);
                       $$->child[0] = $1;
                       $$->lineno = lineno;
                       $$->attr.name = savedName;
-                    }
                   }
             | type_spec saveName LBRKT saveNumber RBRKT SEMI
-                  { if(type == "void"){
-                      yyerror("declare array  as void");
-                    }else{$$ = newDecNode(ArrK);
+                  {   $$ = newDecNode(ArrK);
                       $$->child[0] = $1;
                       $$->lineno = lineno;
                       $$->attr.arr.name = savedName;
                       $$->attr.arr.size = savedNumber;
-                    }
                   }
             ;
 fun_dec     : type_spec saveName
                   { $$ = newDecNode(FuncK);
                     $$->lineno = lineno;
                     $$->child[0]=$1;
-                     $$->attr.name = savedName;
+                    $$->attr.name = savedName;
                   }
               LPAREN params RPAREN comp_stmt
-                 { $$ = $3;
+                  { $$ = $3;
                    $$->child[1] = $5;
                    $$->child[2] = $7;
-                 }
+                  }
             ;
-type_spec   : INT { type = "int";
-              savedLineNo = lineno;
-            }
-            | VOID{ type = "void";
-              savedLineNo = lineno;
-            }
+type_spec   : INT
+                {   $$ = newTypeNode(TypeNameK);
+                    $$->attr.type = INT;
+                    savedLineNo = lineno;
+                }
+            | VOID
+                {   $$ = newTypeNode(TypeNameK);
+                    $$->attr.type = VOID;
+                    savedLineNo = lineno;
+                }
             ;
 params      : param_list  { $$ = $1; }
             | VOID
-                 { $$ = newDecNode(ParamK);
-                   $$->type = VOID;
-                 }
+            ;
 param_list  : param_list COMMA param
                  { YYSTYPE tree = $1;
                    if (tree != NULL)
@@ -140,18 +140,18 @@ param       : type_spec saveName
                  { if(type == "void"){
                      yyerror("declare variable as void");
                    }else{
-                     $$ = newDecNode(ParamK);
-                     $$->child[0] = $2;
-                     $$->attr.name = type;
+                     $$ = newParamNode(NonArrParamK);
+                     $$->child[0] = $1;
+                     $$->attr.name = savedName;
                    }
                  }
             | type_spec saveName LBRKT RBRKT
                  { if(type == "void"){
                      yyerror("declare parameter as void");
                    }else{
-                     $$ = newDecNode(ParamK);
-                     $$->child[0] = $2;
-                     $$->attr.name = type;
+                     $$ = newParamNode(ArrParamK);
+                     $$->child[0] = $1;
+                     $$->attr.name = savedName;
                    }
                  }
             ;
@@ -221,13 +221,6 @@ ret_stmt    : RETURN SEMI
                    $$->child[0] = $2;
                  }
             ;
-var         : saveName { $$ = newExpNode(IdK);
-                         $$->attr.name = savedName;}
-            | saveName LBRKT exp RBRKT {
-                        $$ = newExpNode(IdK);
-                        $$->attr.name = savedName;
-                        $$->child[0] = $3;}
-            ;
 exp         : exp ASSIGN exp
                  { $$ = newExpNode(OpK);
                    $$->child[0] = $1;
@@ -295,19 +288,35 @@ exp         : exp ASSIGN exp
                    $$->attr.op = OVER;
                  }
             | LPAREN exp RPAREN { $$ = $2; }
-            | call {$$ = $1; }
+            | call {$$ = $1;}
             | var {$$ = $1; }
             | saveNumber
                  { $$ = newExpNode(ConstK);
                    $$->attr.val = atoi(tokenString);
                  }
             ;
+var         : saveName
+                 { //printf("in saveName\n");
+                   $$->attr.name = savedName;
+                 }
+            | saveName
+                 { $$ = newExpNode(ArrIdK);
+                 //printf("after new ArrIdK\n");
+                   $$->attr.name = savedName;
+                 }
+              LBRKT exp RBRKT
+                 { $$->child[0] = $4;
+                 //printf("back here\n");
+                 }
+            ;
 call        : saveName
-                  { $$ = newExpNode(CallK);
+                  {
+                  $$ = newExpNode(CallK);
                     $$->attr.name = savedName;
                   }
               LPAREN args RPAREN
-                 {$$->child[0] = $4;
+                 {$$=$2;
+                 $$->child[0] = $4;
                  }
             ;
 args        : arg_list { $$ = $1; }
