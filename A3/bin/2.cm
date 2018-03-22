@@ -1,0 +1,25 @@
+/* Test program #2 */
+/* In this test program there are a variety of errors where there are symbols used that are not
+   defined in the cminus language */
+
+void main(void) {
+    int x;
+	int y;
+
+	x = 5;
+	y = 10;
+
+	if(x >= 5 && y <= 10){ /* and comparison, does not exist */
+		x = 15;
+	}
+
+	int z;
+
+	z = y %% x; /* modulo, does not exist */
+
+	int name;
+
+    name = "Joel and Jeremie"; /* quotations are not supported */
+
+	return;
+}

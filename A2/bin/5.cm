@@ -1,0 +1,33 @@
+/* Test program #5 */ 
+/* follow along with the comments to see what the errors in this program are */ 
+
+void main(void) 
+{
+
+	/* int vars needed for no reason */ 
+	int a = 0;
+	int b = 1;
+	int c = 3; 
+	int d = 4; 
+
+	/* The following are all improper declarations */ 
+	void name; 
+	void error; 
+	void problem; 
+	void no = "YES"; 
+
+	/* lets try to make a strucure */ 
+
+	typedef node{
+		int a = 0;
+		void name = "James"; 
+		void last = "Bond" ; 
+		typedef Node child; 
+	}Node; 
+
+	/* undefined symbols */ 
+	while( a = 6 | 9 = name){
+		b = c %% d; 
+	}
+
+}
