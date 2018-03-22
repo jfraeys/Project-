@@ -20,29 +20,31 @@
 typedef struct LineListRec {
 	int lineno;
 	struct LineListRec * next;
-} * LineList; 
+} * LineList;
 
 typedef struct BucketListRec {
 	char * name;
-	LineList lines; 
+	LineList lines;
 	TreeNode * tree_node;
 	int memloc ; /* memory location for variable */
     struct BucketListRec * next;
 } * BucketList;
 
-typedef struct ScopeRec { 
+typedef struct ScopeRec {
 	char * funcName;
     int nestedLevel;
     struct ScopeRec * parent;
     BucketList hashTable[SIZE]; /* the hash table */
 } * Scope;
 
-/* Functino from text book for how to make symtable 
-	Symtable insert */ 
+Scope globalScope;
+
+/* Functino from text book for how to make symtable
+	Symtable insert */
 void st_insert( char * name, int lineno, int loc, TreeNode * treeNode );
 
 /* Functino from text book for how to make symtable
-	Sym table lookup  returns the memory location or -1 */ 
+	Sym table lookup  returns the memory location or -1 */
 int st_lookup ( char * name );
 
 /* Function from text book for how to print the symtable
@@ -59,7 +61,7 @@ int st_lookup_top(char * name);
 BucketList st_bucket(char * name);
 
 /************ Scope functions ****************/
-/* Create new scope struct variable */ 
+/* Create new scope struct variable */
 Scope s_create(char *funcName);
 
 /* Return the top element of the scope stack */
@@ -72,6 +74,6 @@ void s_pop(void);
 void s_push(Scope scope);
 
 /* Add 1 to the location variable */
-int add_location(void); 
+int add_location(void);
 
 #endif

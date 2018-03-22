@@ -219,7 +219,7 @@ void printTree( TreeNode * tree ){
             }
         }
         else if (tree->nodekind==DecK){
-            switch (tree->kind.exp) {
+            switch (tree->kind.dec) {
                 case FuncK:
                   fprintf(listing,"Function declarion: %s\n", tree->attr.name);
                   printToken(tree->attr.op,"\0");

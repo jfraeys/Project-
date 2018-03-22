@@ -45,7 +45,6 @@ typedef struct arrAttr{
     int size;
 }ArrAttr;
 
-/* ExpType is used for type checking */
 typedef enum {Void,Integer,Boolean, IntArr} ExpType;
 
 #define MAXCHILDREN 3
@@ -68,7 +67,7 @@ typedef struct treeNode
              ArrAttr arr;
              struct ScopeRec * scope;} attr;
      ExpType type; /* for type checking of exps */
-   } TreeNode;
+  } TreeNode;
 
 /**************************************************/
 /***********   Flags for tracing       ************/
@@ -95,5 +94,7 @@ extern int TraceAnalyze;
  * to the TM code file as code is generated
  */
 extern int TraceCode;
+
+extern int errorFlag;
 
 #endif

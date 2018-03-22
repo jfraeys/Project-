@@ -21,14 +21,15 @@ static int hash ( char * key ){
   	int i = 0;
 
   	while (key[i] != '\0'){
-  		temp = ((temp << SHIFT) + key[i]) % SIZE;
+  		temp = ((temp << SHIFT) + key[i]) % SIZE;//create hash
     	++i;
+    	//printf("Temp: %d, key[i]: %d, total: %d\n",temp,key[i],(temp << SHIFT) + key[i]);
   	}
 
   	return temp;
 }
 
-static Scope scopes[MAX_SCOPE];
+static Scope scopes[MAX_SCOPE];//Create an array of scope to hold all possible scope levels
 static int nScope = 0;
 static Scope scopeStack[MAX_SCOPE];
 static int nScopeStack = 0;
@@ -38,32 +39,44 @@ static int location[MAX_SCOPE];
 void st_insert( char * name, int lineno, int loc, TreeNode * treeNode ){
 	int h = hash(name);
   	Scope top = s_top();
-  	BucketList l =  top->hashTable[h];
+  	BucketList list =  top->hashTable[h];
 
-  	while ((l != NULL) && (strcmp(name,l->name) != 0)){
-  		l = l->next;
+	printf("%s\n", list->name);
+  	while ((list != NULL) && (strcmp(name,list->name) != 0)){
+  		list = list->next;
   	}
+	printf("bye\n");
 
-  	if (l == NULL){
-	   	l = (BucketList) malloc(sizeof(struct BucketListRec));
-	    l->name = name;
-	    l->tree_node = treeNode;
-	    l->lines = (LineList) malloc(sizeof(struct LineListRec));
-	    l->lines->lineno = lineno;
-	    l->memloc = loc;
-	    l->lines->next = NULL;
-	    l->next = top->hashTable[h];
-	    top->hashTable[h] = l;
+  	if (list == NULL){
+  		//then it is not in the table yet and we should add it
+	   	list = (BucketList) malloc(sizeof(struct BucketListRec));
+	    list->name = name;
+	    list->tree_node = treeNode;
+	    list->lines = (LineList) malloc(sizeof(struct LineListRec));
+	    list->lines->lineno = lineno;
+	    list->memloc = loc;
+	    list->lines->next = NULL;
+	    list->next = top->hashTable[h];
+	    //add to scope stack hashtable
+	    top->hashTable[h] = list;
 	} else{
-	  // ERROR!
+		//found it in the hash table so we have to add the line number
+	  	LineList t = list->lines;
+	  	//find the end of the line list
+	  	while(t->next != NULL){
+	  		t = t->next;
+	  	}
+	  	t->next = (LineList) malloc(sizeof(struct LineListRec));
+	  	t->next->lineno = lineno;
+	  	t->next->next = NULL;
 	}
 }
 
 /* Lookup function */
 int st_lookup ( char * name ){
-	BucketList l = st_bucket(name);
- 	if (l != NULL){
- 		return l->memloc;
+	BucketList list = st_bucket(name);
+ 	if (list != NULL){
+ 		return list->memloc;
  	}
   	return -1;
 }
@@ -76,39 +89,39 @@ void st_print(FILE * listing){
     	Scope scope = scopes[i];
     	BucketList * hashTable = scope->hashTable;
 
-    	if (i == 0) {     // global scope
-      		fprintf(listing, "<global scope> ");
+    	if (nScope == 0) {
+      		fprintf(listing, "Top Level");
     	} else {
-      		fprintf(listing, "function name: %s ", scope->funcName);
+      		fprintf(listing, "Function name: %s ", scope->funcName);
     	}
 
 	    fprintf(listing, "(nested level: %d)\n", scope->nestedLevel);
 
-	    fprintf(listing,"Symbol Name    Sym.Type  Data Type    Line Numbers\n");
+	    fprintf(listing,"Variable Name  Kind      Type         Line Numbers\n");
 	    fprintf(listing,"-------------  --------  -----------  ------------\n");
 
-	    /*********** one row at a time ******/
+	    /*********************** one row at a time ***************************/
 	    for (j=0;j<SIZE;++j){
 	    	if (hashTable[j] != NULL){
-	    		BucketList l = hashTable[j];
-      			TreeNode *node = l->tree_node;
+	    		BucketList list = hashTable[j];
+      			TreeNode * node = list->tree_node;
 
-      			while (l != NULL){
-      				LineList t = l->lines;
+      			while (list != NULL){
+      				LineList t = list->lines;
 
-        			fprintf(listing,"%-14s ",l->name);
+        			fprintf(listing,"%-14s ",list->name);
 
         			switch (node->nodekind) {
 				        case DecK:
 				          	switch (node->kind.dec) {
 					          	case FuncK:
-					            	fprintf(listing, "Function  ");
+					            	fprintf(listing, "Function      ");
 					            	break;
 					          	case VarK:
-					          	  	fprintf(listing, "Variable  ");
+					          	  	fprintf(listing, "Variable      ");
 					           	 	break;
 					          	case ArrK:
-					            	fprintf(listing, "Array Var.");
+					            	fprintf(listing, "Array Variable");
 					            	break;
 					          	default:
 					            	break;
@@ -117,10 +130,10 @@ void st_print(FILE * listing){
 				        case ParamK:
 				          	switch (node->kind.param) {
 					          	case NonArrParamK:
-					            	fprintf(listing, "Variable  ");
+					            	fprintf(listing, "Variable      ");
 					            	break;
 					          	case ArrParamK:
-					            	fprintf(listing, "Array Var.");
+					            	fprintf(listing, "Array Variable");
 					            	break;
 					          	default:
 					            	break;
@@ -129,7 +142,6 @@ void st_print(FILE * listing){
 				        default:
 				          	break;
 	        		}
-
 				    switch (node->type) {
 				    	case Void:
 				          	fprintf(listing, "Void         ");
@@ -140,17 +152,20 @@ void st_print(FILE * listing){
 				        case Boolean:
 				          	fprintf(listing, "Boolean      ");
 				          	break;
+				        case IntArr:
+				          	fprintf(listing, "Integer Array");
+				          	break;
 				        default:
 				          	break;
 				    }
-
+				    //fill in the lines that the variable appears on
 				    while (t != NULL){
 				        fprintf(listing,"%4d ",t->lineno);
 				        t = t->next;
 				    }
-
+				    //move on to the next
 				    fprintf(listing,"\n");
-				    l = l->next;
+				    list = list->next;
 	      		}
 	    	}
 	  	}//end of for loop
@@ -158,52 +173,35 @@ void st_print(FILE * listing){
   	}//end of for loop
 }//end of print sym table
 
-/* add lineno function */
-void st_add_lineno(char * name, int lineno){
-	//Match the name and finc the bucket
-	BucketList l = st_bucket(name);
-	//Set line list equal to the buckets lines
-  	LineList ll = l->lines;
-
-  	while (ll->next != NULL){
-  		ll = ll->next;
-  	}
-
-  	ll->next = (LineList) malloc(sizeof(struct LineListRec));
-  	ll->next->lineno = lineno;
-  	ll->next->next = NULL;
-}
-
 int st_lookup_top(char * name){
 	int h = hash(name);
-  	Scope sc = s_top();
+  	Scope top = s_top();
 
-  	while(sc) {
-    	BucketList l = sc->hashTable[h];
-    	while ((l != NULL) && (strcmp(name,l->name) != 0)){
-      		l = l->next;
+  	while(top) {
+    	BucketList list = top->hashTable[h];
+    	while ((list != NULL) && (strcmp(name,list->name) != 0)){
+      		list = list->next;
     	}
-    	if (l != NULL){
-    		return l->memloc;
+    	if (list != NULL){
+    		return list->memloc;
     	}
    	 	break;
   	}
-
   	return -1;
 }
 
 BucketList st_bucket(char * name){
 	int h = hash(name);
-  	Scope sc = s_top();
- 	while(sc) {
-    	BucketList l = sc->hashTable[h];
-    	while ((l != NULL) && (strcmp(name,l->name) != 0)){
-      		l = l->next;
+  	Scope top = s_top();
+ 	while(top) {
+    	BucketList list = top->hashTable[h];
+    	while ((list != NULL) && (strcmp(name,list->name) != 0)){
+      		list = list->next;
     	}
-    	if (l != NULL){
-    		return l;
+    	if (list != NULL){
+    		return list;
     	}
-    	sc = sc->parent;
+    	top = top->parent;
   	}
 
   	return NULL;
