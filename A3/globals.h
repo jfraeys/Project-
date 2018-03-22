@@ -69,6 +69,35 @@ typedef struct treeNode
      ExpType type; /* for type checking of exps */
    } TreeNode;
 
+
+/**************************************************/
+/*******   Structures need for Symbol Table *******/
+/**************************************************/
+
+#define SIZE 211
+#define SHIFT 4
+#define MAX_SCOPE 1000
+
+typedef struct LineListRec {
+    int lineno;
+    struct LineListRec * next;
+} * LineList; 
+
+typedef struct BucketListRec {
+    char * name;
+    LineList lines; 
+    TreeNode * tree_node;//Tree node is used to find out more information about each value entered into the list
+    int memloc ; /* memory location for variable */
+    struct BucketListRec * next;
+} * BucketList;
+
+typedef struct ScopeRec { 
+    char * funcName;
+    int nestedLevel;
+    struct ScopeRec * parent;
+    BucketList hashTable[SIZE]; 
+} * Scope;
+
 /**************************************************/
 /***********   Flags for tracing       ************/
 /**************************************************/

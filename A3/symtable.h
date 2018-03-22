@@ -11,46 +11,17 @@
 
 #include "globals.h"
 
-
-#define SIZE 211
-#define SHIFT 4
-#define MAX_SCOPE 1000
-
-
-typedef struct LineListRec {
-	int lineno;
-	struct LineListRec * next;
-} * LineList; 
-
-typedef struct BucketListRec {
-	char * name;
-	LineList lines; 
-	TreeNode * tree_node;
-	int memloc ; /* memory location for variable */
-    struct BucketListRec * next;
-} * BucketList;
-
-typedef struct ScopeRec { 
-	char * funcName;
-    int nestedLevel;
-    struct ScopeRec * parent;
-    BucketList hashTable[SIZE]; /* the hash table */
-} * Scope;
-
 /* Functino from text book for how to make symtable 
 	Symtable insert */ 
-void st_insert( char * name, int lineno, int loc, TreeNode * treeNode );
+void st_insert(char * name, int lineno, int loc, TreeNode * treeNode);
 
 /* Functino from text book for how to make symtable
 	Sym table lookup  returns the memory location or -1 */ 
-int st_lookup ( char * name );
+int st_lookup (char * name);
 
 /* Function from text book for how to print the symtable
 	print Sym Table */
 void st_print(FILE * listing);
-
-/* Add the line number to a specific sym table bucket */
-void st_add_lineno(char * name, int lineno);
 
 /* Return the mem location of the variable or -1 for top scope element of a bucket */
 int st_lookup_top(char * name);

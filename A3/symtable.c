@@ -21,14 +21,15 @@ static int hash ( char * key ){
   	int i = 0;
 
   	while (key[i] != '\0'){
-  		temp = ((temp << SHIFT) + key[i]) % SIZE;
+  		temp = ((temp << SHIFT) + key[i]) % SIZE;//create hash
     	++i;
+    	//printf("Temp: %d, key[i]: %d, total: %d\n",temp,key[i],(temp << SHIFT) + key[i]);
   	}
 
   	return temp;
 }
 
-static Scope scopes[MAX_SCOPE];
+static Scope scopes[MAX_SCOPE];//Create an array of scope to hold all possible scope levels
 static int nScope = 0;
 static Scope scopeStack[MAX_SCOPE];
 static int nScopeStack = 0;
@@ -45,6 +46,7 @@ void st_insert( char * name, int lineno, int loc, TreeNode * treeNode ){
   	}
 
   	if (l == NULL){
+  		//then it is not in the table yet and we should add it 
 	   	l = (BucketList) malloc(sizeof(struct BucketListRec));
 	    l->name = name;
 	    l->tree_node = treeNode;
@@ -53,9 +55,18 @@ void st_insert( char * name, int lineno, int loc, TreeNode * treeNode ){
 	    l->memloc = loc;
 	    l->lines->next = NULL;
 	    l->next = top->hashTable[h];
+	    //add to scope stack hashtable
 	    top->hashTable[h] = l;
 	} else{
-	  // ERROR!
+		//found it in the hash table so we have to add the line number
+	  	LineList t = l->lines; 
+	  	//find the end of the line list
+	  	while(t->next != NULL){
+	  		t = t->next;
+	  	}
+	  	t->next = (LineList) malloc(sizeof(struct LineListRec));
+	  	t->next->lineno = lineno;
+	  	t->next->next = NULL; 
 	}
 }
 
@@ -76,22 +87,22 @@ void st_print(FILE * listing){
     	Scope scope = scopes[i];
     	BucketList * hashTable = scope->hashTable;
 
-    	if (i == 0) {     // global scope
-      		fprintf(listing, "<global scope> ");
+    	if (nScope == 0) { 
+      		fprintf(listing, "Top Level");
     	} else {
-      		fprintf(listing, "function name: %s ", scope->funcName);
+      		fprintf(listing, "Function name: %s ", scope->funcName);
     	}
 
 	    fprintf(listing, "(nested level: %d)\n", scope->nestedLevel);
 
-	    fprintf(listing,"Symbol Name    Sym.Type  Data Type    Line Numbers\n");
+	    fprintf(listing,"Variable Name  Kind      Type         Line Numbers\n");
 	    fprintf(listing,"-------------  --------  -----------  ------------\n");
 
-	    /*********** one row at a time ******/
+	    /*********************** one row at a time ***************************/
 	    for (j=0;j<SIZE;++j){
 	    	if (hashTable[j] != NULL){
 	    		BucketList l = hashTable[j];
-      			TreeNode *node = l->tree_node;
+      			TreeNode * node = l->tree_node;
 
       			while (l != NULL){
       				LineList t = l->lines;
@@ -102,13 +113,13 @@ void st_print(FILE * listing){
 				        case DecK:
 				          	switch (node->kind.dec) {
 					          	case FuncK:
-					            	fprintf(listing, "Function  ");
+					            	fprintf(listing, "Function      ");
 					            	break;
 					          	case VarK:
-					          	  	fprintf(listing, "Variable  ");
+					          	  	fprintf(listing, "Variable      ");
 					           	 	break;
 					          	case ArrK:
-					            	fprintf(listing, "Array Var.");
+					            	fprintf(listing, "Array Variable");
 					            	break;
 					          	default:
 					            	break;
@@ -117,10 +128,10 @@ void st_print(FILE * listing){
 				        case ParamK:
 				          	switch (node->kind.param) {
 					          	case NonArrParamK:
-					            	fprintf(listing, "Variable  ");
+					            	fprintf(listing, "Variable      ");
 					            	break;
 					          	case ArrParamK:
-					            	fprintf(listing, "Array Var.");
+					            	fprintf(listing, "Array Variable");
 					            	break;
 					          	default:
 					            	break;
@@ -129,7 +140,6 @@ void st_print(FILE * listing){
 				        default:
 				          	break;
 	        		}
-
 				    switch (node->type) {
 				    	case Void:
 				          	fprintf(listing, "Void         ");
@@ -140,15 +150,18 @@ void st_print(FILE * listing){
 				        case Boolean:
 				          	fprintf(listing, "Boolean      ");
 				          	break;
+				        case IntArr:
+				          	fprintf(listing, "Integer Array");
+				          	break;
 				        default:
 				          	break;
 				    }
-
+				    //fill in the lines that the variable appears on
 				    while (t != NULL){
 				        fprintf(listing,"%4d ",t->lineno);
 				        t = t->next;
 				    }
-
+				    //move on to the next
 				    fprintf(listing,"\n");
 				    l = l->next;
 	      		}
@@ -158,28 +171,12 @@ void st_print(FILE * listing){
   	}//end of for loop
 }//end of print sym table
 
-/* add lineno function */
-void st_add_lineno(char * name, int lineno){
-	//Match the name and finc the bucket
-	BucketList l = st_bucket(name);
-	//Set line list equal to the buckets lines
-  	LineList ll = l->lines;
-
-  	while (ll->next != NULL){
-  		ll = ll->next;
-  	}
-
-  	ll->next = (LineList) malloc(sizeof(struct LineListRec));
-  	ll->next->lineno = lineno;
-  	ll->next->next = NULL;
-}
-
 int st_lookup_top(char * name){
 	int h = hash(name);
-  	Scope sc = s_top();
+  	Scope top = s_top();
 
-  	while(sc) {
-    	BucketList l = sc->hashTable[h];
+  	while(top) {
+    	BucketList l = top->hashTable[h];
     	while ((l != NULL) && (strcmp(name,l->name) != 0)){
       		l = l->next;
     	}
@@ -188,22 +185,21 @@ int st_lookup_top(char * name){
     	}
    	 	break;
   	}
-
   	return -1;
 }
 
 BucketList st_bucket(char * name){
 	int h = hash(name);
-  	Scope sc = s_top();
- 	while(sc) {
-    	BucketList l = sc->hashTable[h];
+  	Scope top = s_top();
+ 	while(top) {
+    	BucketList l = top->hashTable[h];
     	while ((l != NULL) && (strcmp(name,l->name) != 0)){
       		l = l->next;
     	}
     	if (l != NULL){
     		return l;
     	}
-    	sc = sc->parent;
+    	top = top->parent;
   	}
 
   	return NULL;
