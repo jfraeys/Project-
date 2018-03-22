@@ -37,7 +37,7 @@ static int location[MAX_SCOPE];
 /* Insert function */
 void st_insert( char * name, int lineno, int loc, TreeNode * treeNode ){
 	int h = hash(name);
-  	Scope top = sc_top();
+  	Scope top = s_top();
   	BucketList l =  top->hashTable[h];
 
   	while ((l != NULL) && (strcmp(name,l->name) != 0)){
@@ -47,7 +47,7 @@ void st_insert( char * name, int lineno, int loc, TreeNode * treeNode ){
   	if (l == NULL){
 	   	l = (BucketList) malloc(sizeof(struct BucketListRec));
 	    l->name = name;
-	    l->treeNode = treeNode;
+	    l->tree_node = treeNode;
 	    l->lines = (LineList) malloc(sizeof(struct LineListRec));
 	    l->lines->lineno = lineno;
 	    l->memloc = loc;
@@ -91,7 +91,7 @@ void st_print(FILE * listing){
 	    for (j=0;j<SIZE;++j){
 	    	if (hashTable[j] != NULL){
 	    		BucketList l = hashTable[j];
-      			TreeNode *node = l->treeNode;
+      			TreeNode *node = l->tree_node;
 
       			while (l != NULL){
       				LineList t = l->lines;
@@ -99,15 +99,15 @@ void st_print(FILE * listing){
         			fprintf(listing,"%-14s ",l->name);
 
         			switch (node->nodekind) {
-				        case DeclK:
-				          	switch (node->kind.decl) {
+				        case DecK:
+				          	switch (node->kind.dec) {
 					          	case FuncK:
 					            	fprintf(listing, "Function  ");
 					            	break;
 					          	case VarK:
 					          	  	fprintf(listing, "Variable  ");
 					           	 	break;
-					          	case ArrVarK:
+					          	case ArrK:
 					            	fprintf(listing, "Array Var.");
 					            	break;
 					          	default:
@@ -159,7 +159,7 @@ void st_print(FILE * listing){
 }//end of print sym table
 
 /* add lineno function */
-int st_add_lineno(char * name, int lineno){
+void st_add_lineno(char * name, int lineno){
 	//Match the name and finc the bucket
 	BucketList l = st_bucket(name);
 	//Set line list equal to the buckets lines
@@ -176,7 +176,7 @@ int st_add_lineno(char * name, int lineno){
 
 int st_lookup_top(char * name){
 	int h = hash(name);
-  	Scope sc = sc_top();
+  	Scope sc = s_top();
 
   	while(sc) {
     	BucketList l = sc->hashTable[h];
@@ -194,7 +194,7 @@ int st_lookup_top(char * name){
 
 BucketList st_bucket(char * name){
 	int h = hash(name);
-  	Scope sc = sc_top();
+  	Scope sc = s_top();
  	while(sc) {
     	BucketList l = sc->hashTable[h];
     	while ((l != NULL) && (strcmp(name,l->name) != 0)){
@@ -216,7 +216,7 @@ Scope s_create(char *funcName){
   	newScope = (Scope) malloc(sizeof(struct ScopeRec));
   	newScope->funcName = funcName;
   	newScope->nestedLevel = nScopeStack;
-  	newScope->parent = sc_top();
+  	newScope->parent = s_top();
 
   	scopes[nScope++] = newScope;
 

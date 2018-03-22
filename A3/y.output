@@ -1,0 +1,1684 @@
+Terminals which are not used
+
+   ERROR
+
+
+State 81 conflicts: 1 shift/reduce
+State 82 conflicts: 1 shift/reduce
+State 83 conflicts: 1 shift/reduce
+State 84 conflicts: 1 shift/reduce
+State 85 conflicts: 11 shift/reduce
+State 86 conflicts: 1 shift/reduce
+State 87 conflicts: 1 shift/reduce
+State 88 conflicts: 1 shift/reduce
+State 89 conflicts: 1 shift/reduce
+State 90 conflicts: 1 shift/reduce
+State 91 conflicts: 1 shift/reduce
+State 98 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: dec_list
+
+    2 dec_list: dec_list dec
+    3         | dec
+
+    4 dec: var_dec
+    5    | fun_dec
+
+    6 saveName: ID
+
+    7 saveNumber: NUM
+
+    8 var_dec: type_spec saveName SEMI
+    9        | type_spec saveName LBRKT saveNumber RBRKT SEMI
+
+   10 @1: /* empty */
+
+   11 fun_dec: type_spec saveName @1 LPAREN params RPAREN comp_stmt
+
+   12 type_spec: INT
+   13          | VOID
+
+   14 params: param_list
+   15       | VOID
+
+   16 param_list: param_list COMMA param
+   17           | param
+
+   18 param: type_spec saveName
+   19      | type_spec saveName LBRKT RBRKT
+
+   20 comp_stmt: LBRC local_decs stmt_list RBRC
+
+   21 local_decs: local_decs var_dec
+   22           | /* empty */
+
+   23 stmt_list: stmt_list stmt
+   24          | /* empty */
+
+   25 stmt: exp_stmt
+   26     | comp_stmt
+   27     | sel_stmt
+   28     | iter_stmt
+   29     | ret_stmt
+
+   30 exp_stmt: exp SEMI
+   31         | SEMI
+
+   32 sel_stmt: IF LPAREN exp RPAREN stmt
+   33         | IF LPAREN exp RPAREN stmt ELSE stmt
+
+   34 iter_stmt: WHILE LPAREN exp RPAREN stmt
+
+   35 ret_stmt: RETURN SEMI
+   36         | RETURN exp SEMI
+
+   37 exp: exp ASSIGN exp
+   38    | exp LET exp
+   39    | exp LT exp
+   40    | exp GT exp
+   41    | exp GET exp
+   42    | exp EQ exp
+   43    | exp NQ exp
+   44    | exp PLUS exp
+   45    | exp MINUS exp
+   46    | exp TIMES exp
+   47    | exp OVER exp
+   48    | LPAREN exp RPAREN
+   49    | call
+   50    | var
+   51    | saveNumber
+
+   52 var: saveName
+
+   53 @2: /* empty */
+
+   54 var: saveName @2 LBRKT exp RBRKT
+
+   55 @3: /* empty */
+
+   56 call: saveName @3 LPAREN args RPAREN
+
+   57 args: arg_list
+   58     | /* empty */
+
+   59 arg_list: arg_list COMMA exp
+   60         | exp
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+IF (258) 32 33
+ELSE (259) 33
+INT (260) 12
+RETURN (261) 35 36
+VOID (262) 13 15
+WHILE (263) 34
+ID (264) 6
+NUM (265) 7
+LET (266) 38
+GET (267) 41
+EQ (268) 42
+NQ (269) 43
+ASSIGN (270) 37
+LT (271) 39
+GT (272) 40
+PLUS (273) 44
+MINUS (274) 45
+TIMES (275) 46
+OVER (276) 47
+LPAREN (277) 11 32 33 34 48 56
+RPAREN (278) 11 32 33 34 48 56
+LBRKT (279) 9 19 54
+RBRKT (280) 9 19 54
+LBRC (281) 20
+RBRC (282) 20
+SEMI (283) 8 9 30 31 35 36
+COMMA (284) 16 59
+ERROR (285)
+
+
+Nonterminals, with rules where they appear
+
+$accept (31)
+    on left: 0
+program (32)
+    on left: 1, on right: 0
+dec_list (33)
+    on left: 2 3, on right: 1 2
+dec (34)
+    on left: 4 5, on right: 2 3
+saveName (35)
+    on left: 6, on right: 8 9 11 18 19 52 54 56
+saveNumber (36)
+    on left: 7, on right: 9 51
+var_dec (37)
+    on left: 8 9, on right: 4 21
+fun_dec (38)
+    on left: 11, on right: 5
+@1 (39)
+    on left: 10, on right: 11
+type_spec (40)
+    on left: 12 13, on right: 8 9 11 18 19
+params (41)
+    on left: 14 15, on right: 11
+param_list (42)
+    on left: 16 17, on right: 14 16
+param (43)
+    on left: 18 19, on right: 16 17
+comp_stmt (44)
+    on left: 20, on right: 11 26
+local_decs (45)
+    on left: 21 22, on right: 20 21
+stmt_list (46)
+    on left: 23 24, on right: 20 23
+stmt (47)
+    on left: 25 26 27 28 29, on right: 23 32 33 34
+exp_stmt (48)
+    on left: 30 31, on right: 25
+sel_stmt (49)
+    on left: 32 33, on right: 27
+iter_stmt (50)
+    on left: 34, on right: 28
+ret_stmt (51)
+    on left: 35 36, on right: 29
+exp (52)
+    on left: 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51,
+    on right: 30 32 33 34 36 37 38 39 40 41 42 43 44 45 46 47 48 54
+    59 60
+var (53)
+    on left: 52 54, on right: 50
+@2 (54)
+    on left: 53, on right: 54
+call (55)
+    on left: 56, on right: 49
+@3 (56)
+    on left: 55, on right: 56
+args (57)
+    on left: 57 58, on right: 56
+arg_list (58)
+    on left: 59 60, on right: 57 59
+
+
+state 0
+
+    0 $accept: . program $end
+
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
+
+    program    go to state 3
+    dec_list   go to state 4
+    dec        go to state 5
+    var_dec    go to state 6
+    fun_dec    go to state 7
+    type_spec  go to state 8
+
+
+state 1
+
+   12 type_spec: INT .
+
+    $default  reduce using rule 12 (type_spec)
+
+
+state 2
+
+   13 type_spec: VOID .
+
+    $default  reduce using rule 13 (type_spec)
+
+
+state 3
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 9
+
+
+state 4
+
+    1 program: dec_list .
+    2 dec_list: dec_list . dec
+
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
+
+    $default  reduce using rule 1 (program)
+
+    dec        go to state 10
+    var_dec    go to state 6
+    fun_dec    go to state 7
+    type_spec  go to state 8
+
+
+state 5
+
+    3 dec_list: dec .
+
+    $default  reduce using rule 3 (dec_list)
+
+
+state 6
+
+    4 dec: var_dec .
+
+    $default  reduce using rule 4 (dec)
+
+
+state 7
+
+    5 dec: fun_dec .
+
+    $default  reduce using rule 5 (dec)
+
+
+state 8
+
+    8 var_dec: type_spec . saveName SEMI
+    9        | type_spec . saveName LBRKT saveNumber RBRKT SEMI
+   11 fun_dec: type_spec . saveName @1 LPAREN params RPAREN comp_stmt
+
+    ID  shift, and go to state 11
+
+    saveName  go to state 12
+
+
+state 9
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+state 10
+
+    2 dec_list: dec_list dec .
+
+    $default  reduce using rule 2 (dec_list)
+
+
+state 11
+
+    6 saveName: ID .
+
+    $default  reduce using rule 6 (saveName)
+
+
+state 12
+
+    8 var_dec: type_spec saveName . SEMI
+    9        | type_spec saveName . LBRKT saveNumber RBRKT SEMI
+   11 fun_dec: type_spec saveName . @1 LPAREN params RPAREN comp_stmt
+
+    LBRKT  shift, and go to state 13
+    SEMI   shift, and go to state 14
+
+    $default  reduce using rule 10 (@1)
+
+    @1  go to state 15
+
+
+state 13
+
+    9 var_dec: type_spec saveName LBRKT . saveNumber RBRKT SEMI
+
+    NUM  shift, and go to state 16
+
+    saveNumber  go to state 17
+
+
+state 14
+
+    8 var_dec: type_spec saveName SEMI .
+
+    $default  reduce using rule 8 (var_dec)
+
+
+state 15
+
+   11 fun_dec: type_spec saveName @1 . LPAREN params RPAREN comp_stmt
+
+    LPAREN  shift, and go to state 18
+
+
+state 16
+
+    7 saveNumber: NUM .
+
+    $default  reduce using rule 7 (saveNumber)
+
+
+state 17
+
+    9 var_dec: type_spec saveName LBRKT saveNumber . RBRKT SEMI
+
+    RBRKT  shift, and go to state 19
+
+
+state 18
+
+   11 fun_dec: type_spec saveName @1 LPAREN . params RPAREN comp_stmt
+
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 20
+
+    type_spec   go to state 21
+    params      go to state 22
+    param_list  go to state 23
+    param       go to state 24
+
+
+state 19
+
+    9 var_dec: type_spec saveName LBRKT saveNumber RBRKT . SEMI
+
+    SEMI  shift, and go to state 25
+
+
+state 20
+
+   13 type_spec: VOID .
+   15 params: VOID .
+
+    RPAREN    reduce using rule 15 (params)
+    $default  reduce using rule 13 (type_spec)
+
+
+state 21
+
+   18 param: type_spec . saveName
+   19      | type_spec . saveName LBRKT RBRKT
+
+    ID  shift, and go to state 11
+
+    saveName  go to state 26
+
+
+state 22
+
+   11 fun_dec: type_spec saveName @1 LPAREN params . RPAREN comp_stmt
+
+    RPAREN  shift, and go to state 27
+
+
+state 23
+
+   14 params: param_list .
+   16 param_list: param_list . COMMA param
+
+    COMMA  shift, and go to state 28
+
+    $default  reduce using rule 14 (params)
+
+
+state 24
+
+   17 param_list: param .
+
+    $default  reduce using rule 17 (param_list)
+
+
+state 25
+
+    9 var_dec: type_spec saveName LBRKT saveNumber RBRKT SEMI .
+
+    $default  reduce using rule 9 (var_dec)
+
+
+state 26
+
+   18 param: type_spec saveName .
+   19      | type_spec saveName . LBRKT RBRKT
+
+    LBRKT  shift, and go to state 29
+
+    $default  reduce using rule 18 (param)
+
+
+state 27
+
+   11 fun_dec: type_spec saveName @1 LPAREN params RPAREN . comp_stmt
+
+    LBRC  shift, and go to state 30
+
+    comp_stmt  go to state 31
+
+
+state 28
+
+   16 param_list: param_list COMMA . param
+
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
+
+    type_spec  go to state 21
+    param      go to state 32
+
+
+state 29
+
+   19 param: type_spec saveName LBRKT . RBRKT
+
+    RBRKT  shift, and go to state 33
+
+
+state 30
+
+   20 comp_stmt: LBRC . local_decs stmt_list RBRC
+
+    $default  reduce using rule 22 (local_decs)
+
+    local_decs  go to state 34
+
+
+state 31
+
+   11 fun_dec: type_spec saveName @1 LPAREN params RPAREN comp_stmt .
+
+    $default  reduce using rule 11 (fun_dec)
+
+
+state 32
+
+   16 param_list: param_list COMMA param .
+
+    $default  reduce using rule 16 (param_list)
+
+
+state 33
+
+   19 param: type_spec saveName LBRKT RBRKT .
+
+    $default  reduce using rule 19 (param)
+
+
+state 34
+
+   20 comp_stmt: LBRC local_decs . stmt_list RBRC
+   21 local_decs: local_decs . var_dec
+
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
+
+    $default  reduce using rule 24 (stmt_list)
+
+    var_dec    go to state 35
+    type_spec  go to state 36
+    stmt_list  go to state 37
+
+
+state 35
+
+   21 local_decs: local_decs var_dec .
+
+    $default  reduce using rule 21 (local_decs)
+
+
+state 36
+
+    8 var_dec: type_spec . saveName SEMI
+    9        | type_spec . saveName LBRKT saveNumber RBRKT SEMI
+
+    ID  shift, and go to state 11
+
+    saveName  go to state 38
+
+
+state 37
+
+   20 comp_stmt: LBRC local_decs stmt_list . RBRC
+   23 stmt_list: stmt_list . stmt
+
+    IF      shift, and go to state 39
+    RETURN  shift, and go to state 40
+    WHILE   shift, and go to state 41
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+    LBRC    shift, and go to state 30
+    RBRC    shift, and go to state 43
+    SEMI    shift, and go to state 44
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    comp_stmt   go to state 47
+    stmt        go to state 48
+    exp_stmt    go to state 49
+    sel_stmt    go to state 50
+    iter_stmt   go to state 51
+    ret_stmt    go to state 52
+    exp         go to state 53
+    var         go to state 54
+    call        go to state 55
+
+
+state 38
+
+    8 var_dec: type_spec saveName . SEMI
+    9        | type_spec saveName . LBRKT saveNumber RBRKT SEMI
+
+    LBRKT  shift, and go to state 13
+    SEMI   shift, and go to state 14
+
+
+state 39
+
+   32 sel_stmt: IF . LPAREN exp RPAREN stmt
+   33         | IF . LPAREN exp RPAREN stmt ELSE stmt
+
+    LPAREN  shift, and go to state 56
+
+
+state 40
+
+   35 ret_stmt: RETURN . SEMI
+   36         | RETURN . exp SEMI
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+    SEMI    shift, and go to state 57
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 58
+    var         go to state 54
+    call        go to state 55
+
+
+state 41
+
+   34 iter_stmt: WHILE . LPAREN exp RPAREN stmt
+
+    LPAREN  shift, and go to state 59
+
+
+state 42
+
+   48 exp: LPAREN . exp RPAREN
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 60
+    var         go to state 54
+    call        go to state 55
+
+
+state 43
+
+   20 comp_stmt: LBRC local_decs stmt_list RBRC .
+
+    $default  reduce using rule 20 (comp_stmt)
+
+
+state 44
+
+   31 exp_stmt: SEMI .
+
+    $default  reduce using rule 31 (exp_stmt)
+
+
+state 45
+
+   52 var: saveName .
+   54    | saveName . @2 LBRKT exp RBRKT
+   56 call: saveName . @3 LPAREN args RPAREN
+
+    LPAREN    reduce using rule 55 (@3)
+    LBRKT     reduce using rule 53 (@2)
+    $default  reduce using rule 52 (var)
+
+    @2  go to state 61
+    @3  go to state 62
+
+
+state 46
+
+   51 exp: saveNumber .
+
+    $default  reduce using rule 51 (exp)
+
+
+state 47
+
+   26 stmt: comp_stmt .
+
+    $default  reduce using rule 26 (stmt)
+
+
+state 48
+
+   23 stmt_list: stmt_list stmt .
+
+    $default  reduce using rule 23 (stmt_list)
+
+
+state 49
+
+   25 stmt: exp_stmt .
+
+    $default  reduce using rule 25 (stmt)
+
+
+state 50
+
+   27 stmt: sel_stmt .
+
+    $default  reduce using rule 27 (stmt)
+
+
+state 51
+
+   28 stmt: iter_stmt .
+
+    $default  reduce using rule 28 (stmt)
+
+
+state 52
+
+   29 stmt: ret_stmt .
+
+    $default  reduce using rule 29 (stmt)
+
+
+state 53
+
+   30 exp_stmt: exp . SEMI
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    LET     shift, and go to state 63
+    GET     shift, and go to state 64
+    EQ      shift, and go to state 65
+    NQ      shift, and go to state 66
+    ASSIGN  shift, and go to state 67
+    LT      shift, and go to state 68
+    GT      shift, and go to state 69
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+    SEMI    shift, and go to state 74
+
+
+state 54
+
+   50 exp: var .
+
+    $default  reduce using rule 50 (exp)
+
+
+state 55
+
+   49 exp: call .
+
+    $default  reduce using rule 49 (exp)
+
+
+state 56
+
+   32 sel_stmt: IF LPAREN . exp RPAREN stmt
+   33         | IF LPAREN . exp RPAREN stmt ELSE stmt
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 75
+    var         go to state 54
+    call        go to state 55
+
+
+state 57
+
+   35 ret_stmt: RETURN SEMI .
+
+    $default  reduce using rule 35 (ret_stmt)
+
+
+state 58
+
+   36 ret_stmt: RETURN exp . SEMI
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    LET     shift, and go to state 63
+    GET     shift, and go to state 64
+    EQ      shift, and go to state 65
+    NQ      shift, and go to state 66
+    ASSIGN  shift, and go to state 67
+    LT      shift, and go to state 68
+    GT      shift, and go to state 69
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+    SEMI    shift, and go to state 76
+
+
+state 59
+
+   34 iter_stmt: WHILE LPAREN . exp RPAREN stmt
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 77
+    var         go to state 54
+    call        go to state 55
+
+
+state 60
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+   48    | LPAREN exp . RPAREN
+
+    LET     shift, and go to state 63
+    GET     shift, and go to state 64
+    EQ      shift, and go to state 65
+    NQ      shift, and go to state 66
+    ASSIGN  shift, and go to state 67
+    LT      shift, and go to state 68
+    GT      shift, and go to state 69
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+    RPAREN  shift, and go to state 78
+
+
+state 61
+
+   54 var: saveName @2 . LBRKT exp RBRKT
+
+    LBRKT  shift, and go to state 79
+
+
+state 62
+
+   56 call: saveName @3 . LPAREN args RPAREN
+
+    LPAREN  shift, and go to state 80
+
+
+state 63
+
+   38 exp: exp LET . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 81
+    var         go to state 54
+    call        go to state 55
+
+
+state 64
+
+   41 exp: exp GET . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 82
+    var         go to state 54
+    call        go to state 55
+
+
+state 65
+
+   42 exp: exp EQ . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 83
+    var         go to state 54
+    call        go to state 55
+
+
+state 66
+
+   43 exp: exp NQ . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 84
+    var         go to state 54
+    call        go to state 55
+
+
+state 67
+
+   37 exp: exp ASSIGN . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 85
+    var         go to state 54
+    call        go to state 55
+
+
+state 68
+
+   39 exp: exp LT . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 86
+    var         go to state 54
+    call        go to state 55
+
+
+state 69
+
+   40 exp: exp GT . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 87
+    var         go to state 54
+    call        go to state 55
+
+
+state 70
+
+   44 exp: exp PLUS . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 88
+    var         go to state 54
+    call        go to state 55
+
+
+state 71
+
+   45 exp: exp MINUS . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 89
+    var         go to state 54
+    call        go to state 55
+
+
+state 72
+
+   46 exp: exp TIMES . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 90
+    var         go to state 54
+    call        go to state 55
+
+
+state 73
+
+   47 exp: exp OVER . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 91
+    var         go to state 54
+    call        go to state 55
+
+
+state 74
+
+   30 exp_stmt: exp SEMI .
+
+    $default  reduce using rule 30 (exp_stmt)
+
+
+state 75
+
+   32 sel_stmt: IF LPAREN exp . RPAREN stmt
+   33         | IF LPAREN exp . RPAREN stmt ELSE stmt
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    LET     shift, and go to state 63
+    GET     shift, and go to state 64
+    EQ      shift, and go to state 65
+    NQ      shift, and go to state 66
+    ASSIGN  shift, and go to state 67
+    LT      shift, and go to state 68
+    GT      shift, and go to state 69
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+    RPAREN  shift, and go to state 92
+
+
+state 76
+
+   36 ret_stmt: RETURN exp SEMI .
+
+    $default  reduce using rule 36 (ret_stmt)
+
+
+state 77
+
+   34 iter_stmt: WHILE LPAREN exp . RPAREN stmt
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    LET     shift, and go to state 63
+    GET     shift, and go to state 64
+    EQ      shift, and go to state 65
+    NQ      shift, and go to state 66
+    ASSIGN  shift, and go to state 67
+    LT      shift, and go to state 68
+    GT      shift, and go to state 69
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+    RPAREN  shift, and go to state 93
+
+
+state 78
+
+   48 exp: LPAREN exp RPAREN .
+
+    $default  reduce using rule 48 (exp)
+
+
+state 79
+
+   54 var: saveName @2 LBRKT . exp RBRKT
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 94
+    var         go to state 54
+    call        go to state 55
+
+
+state 80
+
+   56 call: saveName @3 LPAREN . args RPAREN
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    $default  reduce using rule 58 (args)
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 95
+    var         go to state 54
+    call        go to state 55
+    args        go to state 96
+    arg_list    go to state 97
+
+
+state 81
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   38    | exp LET exp .
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    ASSIGN  shift, and go to state 67
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+
+    LET  error (nonassociative)
+    GET  error (nonassociative)
+    EQ   error (nonassociative)
+    NQ   error (nonassociative)
+    LT   error (nonassociative)
+    GT   error (nonassociative)
+
+    ASSIGN    [reduce using rule 38 (exp)]
+    $default  reduce using rule 38 (exp)
+
+
+state 82
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   41    | exp GET exp .
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    ASSIGN  shift, and go to state 67
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+
+    LET  error (nonassociative)
+    GET  error (nonassociative)
+    EQ   error (nonassociative)
+    NQ   error (nonassociative)
+    LT   error (nonassociative)
+    GT   error (nonassociative)
+
+    ASSIGN    [reduce using rule 41 (exp)]
+    $default  reduce using rule 41 (exp)
+
+
+state 83
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   42    | exp EQ exp .
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    ASSIGN  shift, and go to state 67
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+
+    LET  error (nonassociative)
+    GET  error (nonassociative)
+    EQ   error (nonassociative)
+    NQ   error (nonassociative)
+    LT   error (nonassociative)
+    GT   error (nonassociative)
+
+    ASSIGN    [reduce using rule 42 (exp)]
+    $default  reduce using rule 42 (exp)
+
+
+state 84
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   43    | exp NQ exp .
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    ASSIGN  shift, and go to state 67
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+
+    LET  error (nonassociative)
+    GET  error (nonassociative)
+    EQ   error (nonassociative)
+    NQ   error (nonassociative)
+    LT   error (nonassociative)
+    GT   error (nonassociative)
+
+    ASSIGN    [reduce using rule 43 (exp)]
+    $default  reduce using rule 43 (exp)
+
+
+state 85
+
+   37 exp: exp . ASSIGN exp
+   37    | exp ASSIGN exp .
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    LET     shift, and go to state 63
+    GET     shift, and go to state 64
+    EQ      shift, and go to state 65
+    NQ      shift, and go to state 66
+    ASSIGN  shift, and go to state 67
+    LT      shift, and go to state 68
+    GT      shift, and go to state 69
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+
+    LET       [reduce using rule 37 (exp)]
+    GET       [reduce using rule 37 (exp)]
+    EQ        [reduce using rule 37 (exp)]
+    NQ        [reduce using rule 37 (exp)]
+    ASSIGN    [reduce using rule 37 (exp)]
+    LT        [reduce using rule 37 (exp)]
+    GT        [reduce using rule 37 (exp)]
+    PLUS      [reduce using rule 37 (exp)]
+    MINUS     [reduce using rule 37 (exp)]
+    TIMES     [reduce using rule 37 (exp)]
+    OVER      [reduce using rule 37 (exp)]
+    $default  reduce using rule 37 (exp)
+
+
+state 86
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   39    | exp LT exp .
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    ASSIGN  shift, and go to state 67
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+
+    LET  error (nonassociative)
+    GET  error (nonassociative)
+    EQ   error (nonassociative)
+    NQ   error (nonassociative)
+    LT   error (nonassociative)
+    GT   error (nonassociative)
+
+    ASSIGN    [reduce using rule 39 (exp)]
+    $default  reduce using rule 39 (exp)
+
+
+state 87
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   40    | exp GT exp .
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    ASSIGN  shift, and go to state 67
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+
+    LET  error (nonassociative)
+    GET  error (nonassociative)
+    EQ   error (nonassociative)
+    NQ   error (nonassociative)
+    LT   error (nonassociative)
+    GT   error (nonassociative)
+
+    ASSIGN    [reduce using rule 40 (exp)]
+    $default  reduce using rule 40 (exp)
+
+
+state 88
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   44    | exp PLUS exp .
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    ASSIGN  shift, and go to state 67
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+
+    ASSIGN    [reduce using rule 44 (exp)]
+    $default  reduce using rule 44 (exp)
+
+
+state 89
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   45    | exp MINUS exp .
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+
+    ASSIGN  shift, and go to state 67
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+
+    ASSIGN    [reduce using rule 45 (exp)]
+    $default  reduce using rule 45 (exp)
+
+
+state 90
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   46    | exp TIMES exp .
+   47    | exp . OVER exp
+
+    ASSIGN  shift, and go to state 67
+
+    ASSIGN    [reduce using rule 46 (exp)]
+    $default  reduce using rule 46 (exp)
+
+
+state 91
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+   47    | exp OVER exp .
+
+    ASSIGN  shift, and go to state 67
+
+    ASSIGN    [reduce using rule 47 (exp)]
+    $default  reduce using rule 47 (exp)
+
+
+state 92
+
+   32 sel_stmt: IF LPAREN exp RPAREN . stmt
+   33         | IF LPAREN exp RPAREN . stmt ELSE stmt
+
+    IF      shift, and go to state 39
+    RETURN  shift, and go to state 40
+    WHILE   shift, and go to state 41
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+    LBRC    shift, and go to state 30
+    SEMI    shift, and go to state 44
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    comp_stmt   go to state 47
+    stmt        go to state 98
+    exp_stmt    go to state 49
+    sel_stmt    go to state 50
+    iter_stmt   go to state 51
+    ret_stmt    go to state 52
+    exp         go to state 53
+    var         go to state 54
+    call        go to state 55
+
+
+state 93
+
+   34 iter_stmt: WHILE LPAREN exp RPAREN . stmt
+
+    IF      shift, and go to state 39
+    RETURN  shift, and go to state 40
+    WHILE   shift, and go to state 41
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+    LBRC    shift, and go to state 30
+    SEMI    shift, and go to state 44
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    comp_stmt   go to state 47
+    stmt        go to state 99
+    exp_stmt    go to state 49
+    sel_stmt    go to state 50
+    iter_stmt   go to state 51
+    ret_stmt    go to state 52
+    exp         go to state 53
+    var         go to state 54
+    call        go to state 55
+
+
+state 94
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+   54 var: saveName @2 LBRKT exp . RBRKT
+
+    LET     shift, and go to state 63
+    GET     shift, and go to state 64
+    EQ      shift, and go to state 65
+    NQ      shift, and go to state 66
+    ASSIGN  shift, and go to state 67
+    LT      shift, and go to state 68
+    GT      shift, and go to state 69
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+    RBRKT   shift, and go to state 100
+
+
+state 95
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+   60 arg_list: exp .
+
+    LET     shift, and go to state 63
+    GET     shift, and go to state 64
+    EQ      shift, and go to state 65
+    NQ      shift, and go to state 66
+    ASSIGN  shift, and go to state 67
+    LT      shift, and go to state 68
+    GT      shift, and go to state 69
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+
+    $default  reduce using rule 60 (arg_list)
+
+
+state 96
+
+   56 call: saveName @3 LPAREN args . RPAREN
+
+    RPAREN  shift, and go to state 101
+
+
+state 97
+
+   57 args: arg_list .
+   59 arg_list: arg_list . COMMA exp
+
+    COMMA  shift, and go to state 102
+
+    $default  reduce using rule 57 (args)
+
+
+state 98
+
+   32 sel_stmt: IF LPAREN exp RPAREN stmt .
+   33         | IF LPAREN exp RPAREN stmt . ELSE stmt
+
+    ELSE  shift, and go to state 103
+
+    ELSE      [reduce using rule 32 (sel_stmt)]
+    $default  reduce using rule 32 (sel_stmt)
+
+
+state 99
+
+   34 iter_stmt: WHILE LPAREN exp RPAREN stmt .
+
+    $default  reduce using rule 34 (iter_stmt)
+
+
+state 100
+
+   54 var: saveName @2 LBRKT exp RBRKT .
+
+    $default  reduce using rule 54 (var)
+
+
+state 101
+
+   56 call: saveName @3 LPAREN args RPAREN .
+
+    $default  reduce using rule 56 (call)
+
+
+state 102
+
+   59 arg_list: arg_list COMMA . exp
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    exp         go to state 104
+    var         go to state 54
+    call        go to state 55
+
+
+state 103
+
+   33 sel_stmt: IF LPAREN exp RPAREN stmt ELSE . stmt
+
+    IF      shift, and go to state 39
+    RETURN  shift, and go to state 40
+    WHILE   shift, and go to state 41
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 16
+    LPAREN  shift, and go to state 42
+    LBRC    shift, and go to state 30
+    SEMI    shift, and go to state 44
+
+    saveName    go to state 45
+    saveNumber  go to state 46
+    comp_stmt   go to state 47
+    stmt        go to state 105
+    exp_stmt    go to state 49
+    sel_stmt    go to state 50
+    iter_stmt   go to state 51
+    ret_stmt    go to state 52
+    exp         go to state 53
+    var         go to state 54
+    call        go to state 55
+
+
+state 104
+
+   37 exp: exp . ASSIGN exp
+   38    | exp . LET exp
+   39    | exp . LT exp
+   40    | exp . GT exp
+   41    | exp . GET exp
+   42    | exp . EQ exp
+   43    | exp . NQ exp
+   44    | exp . PLUS exp
+   45    | exp . MINUS exp
+   46    | exp . TIMES exp
+   47    | exp . OVER exp
+   59 arg_list: arg_list COMMA exp .
+
+    LET     shift, and go to state 63
+    GET     shift, and go to state 64
+    EQ      shift, and go to state 65
+    NQ      shift, and go to state 66
+    ASSIGN  shift, and go to state 67
+    LT      shift, and go to state 68
+    GT      shift, and go to state 69
+    PLUS    shift, and go to state 70
+    MINUS   shift, and go to state 71
+    TIMES   shift, and go to state 72
+    OVER    shift, and go to state 73
+
+    $default  reduce using rule 59 (arg_list)
+
+
+state 105
+
+   33 sel_stmt: IF LPAREN exp RPAREN stmt ELSE stmt .
+
+    $default  reduce using rule 33 (sel_stmt)

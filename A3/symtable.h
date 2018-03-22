@@ -12,6 +12,11 @@
 #include "globals.h"
 
 
+#define SIZE 211
+#define SHIFT 4
+#define MAX_SCOPE 1000
+
+
 typedef struct LineListRec {
 	int lineno;
 	struct LineListRec * next;
@@ -19,7 +24,7 @@ typedef struct LineListRec {
 
 typedef struct BucketListRec {
 	char * name;
-	LineList * lines; 
+	LineList lines; 
 	TreeNode * tree_node;
 	int memloc ; /* memory location for variable */
     struct BucketListRec * next;
@@ -45,7 +50,7 @@ int st_lookup ( char * name );
 void st_print(FILE * listing);
 
 /* Add the line number to a specific sym table bucket */
-int st_add_lineno(char * name, int lineno);
+void st_add_lineno(char * name, int lineno);
 
 /* Return the mem location of the variable or -1 for top scope element of a bucket */
 int st_lookup_top(char * name);
