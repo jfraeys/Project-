@@ -209,7 +209,7 @@ void printTree( TreeNode * tree )
           break;
         case ArrIdK:
         //printf("printing ArrIdK\n");
-          fprintf(listing, "ArrId\n");
+          fprintf(listing, "ArrId: %s\n", tree->attr.name);
           break;
         case CallK:
           fprintf(listing, "Call: %s\n", tree->attr.name);
