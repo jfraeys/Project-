@@ -11,6 +11,7 @@
 
 /* tokenString array stores the lexeme of each token */
 extern char tokenString[MAXTOKENLEN+1];
+extern char currentPos[100];
 
 /* returns the next token in source file
  */

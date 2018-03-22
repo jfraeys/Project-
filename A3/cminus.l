@@ -12,6 +12,7 @@
 
 /* lexeme of identifier or reserved word */
 char tokenString[MAXTOKENLEN+1];
+char currentPos[100];
 %}
 
 %x CMNT
@@ -25,36 +26,36 @@ whitespace  [ \t]+
 
 %%
 
-"if"            {return IF;}
-"else"          {return ELSE;}
-"int"           {return INT;}
-"return"        {return RETURN;}
-"void"          {return VOID;}
-"while"         {return WHILE;}
-"<="            {return LET;}
-">="            {return GET;}
-"="             {return ASSIGN;}
-"!="            {return NQ;}
-"=="            {return EQ;}
-"<"             {return LT;}
-">"		        {return GT;}
-"+"             {return PLUS;}
-"-"             {return MINUS;}
-"*"             {return TIMES;}
-"/"             {return OVER;}
-"("             {return LPAREN;}
-")"             {return RPAREN;}
-"["             {return LBRKT;}
-"]"             {return RBRKT;}
-"{"             {return LBRC;}
-"}"             {return RBRC;}
-";"             {return SEMI;}
-","             {return COMMA;}
-{number}        {return NUM;}
-{identifier}    {return ID;}
-{newline}       {lineno++;}
-{whitespace}    {/* skip whitespace */}
-.               {return ERROR;}
+"if"            {col += 2; return IF;}
+"else"          {col += 4; return ELSE;}
+"int"           {col += 3; return INT;}
+"return"        {col += 6; return RETURN;}
+"void"          {col += 4; return VOID;}
+"while"         {col += 5; return WHILE;}
+"<="            {col += 2; return LET;}
+">="            {col += 2; return GET;}
+"="             {col += 1; return ASSIGN;}
+"!="            {col += 2; return NQ;}
+"=="            {col += 2; return EQ;}
+"<"             {col += 1; return LT;}
+">"		        {col += 1; return GT;}
+"+"             {col += 1; return PLUS;}
+"-"             {col += 1; return MINUS;}
+"*"             {col += 1; return TIMES;}
+"/"             {col += 1; return OVER;}
+"("             {col += 1; return LPAREN;}
+")"             {col += 1; return RPAREN;}
+"["             {col += 1; return LBRKT;}
+"]"             {col += 1; return RBRKT;}
+"{"             {col += 1; return LBRC;}
+"}"             {col += 1; return RBRC;}
+";"             {col += 1; return SEMI;}
+","             {col += 1; return COMMA;}
+{number}        {col += strlen(yytext); return NUM;}
+{identifier}    {col += strlen(yytext); return ID;}
+{newline}       {col = 0; memset(currentPos, 0, 100); lineno++;}
+{whitespace}    {col += strlen(yytext); strcat(currentPos, yytext);/* skip whitespace */}
+.               {col += strlen(yytext); return ERROR;}
 "/*"             { BEGIN CMNT; }
 <CMNT>"*/"       { BEGIN    INITIAL; }
 <CMNT>.          {/* skip content */}
@@ -72,9 +73,10 @@ int getToken(void)
     yyout = listing;
   }
   currentToken = yylex();
+  strcat(currentPos, yytext);
   strncpy(tokenString, yytext, MAXTOKENLEN);
   if (TraceScan) {
-    fprintf(listing,"\t%d: ",lineno);
+    fprintf(listing,"\t%d:%d: ",lineno, col);
     printToken(currentToken,tokenString);
   }
   return currentToken;

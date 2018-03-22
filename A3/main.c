@@ -27,6 +27,7 @@
 
 /* allocate global variables */
 int lineno = 0;
+int col = 0;
 FILE * source;
 FILE * listing;
 FILE * code;
@@ -36,8 +37,6 @@ int TraceScan = TRUE;
 int TraceParse = TRUE;
 int TraceAnalyze = FALSE;
 int TraceCode = FALSE;
-
-int Error = FALSE;
 
 int match (regex_t *exp, char *sz){
     regmatch_t matches[MAX_MATCHES];

@@ -12,11 +12,12 @@
 #include "parse.h"
 
 #define YYSTYPE TreeNode *
-static char * savedName;
 static int savedLineNo;
+static int savedColNo;
 static TreeNode * savedTree; /* stores syntax tree for later return */
 static int savedNumber;
 static char * savedName;
+static char * savedType;
 static char * type;
 
 extern int yychar;
@@ -24,9 +25,14 @@ extern int yychar;
 extern int yyparse ();
 
 int yyerror(char * message)
-{ fprintf(listing,"Syntax error at line %d: %s\n",lineno,message);
-  fprintf(listing,"Current token: ");
-  printToken(yychar,tokenString);
+{ int i;
+  fprintf(listing,"Syntax error at line %d:%d\n",lineno, col);
+  fprintf(listing,"Current token: \n %s\n", currentPos);
+
+  for(i = 0; i < strlen(currentPos); i++)
+    fprintf(listing, " ");
+
+  fprintf(listing, "^\n");
 
   return 0;
 }
@@ -76,9 +82,8 @@ dec         : var_dec { $$ = $1; }
             | fun_dec { $$ = $1; }
             ;
 saveName   : ID
-                  { $$ = newExpNode(IdK);
-                    savedName = copyString(tokenString);
-                    $$->attr.name = savedName;
+                  { savedName = copyString(tokenString);
+                    savedLineNo = lineno;
                   }
             ;
 saveNumber  : NUM
@@ -103,24 +108,22 @@ var_dec     : type_spec saveName SEMI
 fun_dec     : type_spec saveName
                   { $$ = newDecNode(FuncK);
                     $$->lineno = lineno;
-                    $$->child[0]=$1;
                     $$->attr.name = savedName;
                   }
               LPAREN params RPAREN comp_stmt
                   { $$ = $3;
-                   $$->child[1] = $5;
-                   $$->child[2] = $7;
+                    $$->child[0] = $1;
+                    $$->child[1] = $5;
+                     $$->child[2] = $7;
                   }
             ;
 type_spec   : INT
-                {   $$ = newTypeNode(TypeNameK);
-                    $$->attr.type = INT;
-                    savedLineNo = lineno;
+                {   $$ = newDecNode(TypeNameK);
+                    $$->attr.name = copyString(tokenString);
                 }
             | VOID
-                {   $$ = newTypeNode(TypeNameK);
-                    $$->attr.type = VOID;
-                    savedLineNo = lineno;
+                {   $$ = newDecNode(TypeNameK);
+                    $$->attr.name = copyString(tokenString);
                 }
             ;
 params      : param_list  { $$ = $1; }
@@ -294,19 +297,25 @@ exp         : exp ASSIGN exp
                  { $$ = newExpNode(ConstK);
                    $$->attr.val = atoi(tokenString);
                  }
+            | error
+     			 { $$ = newErrNode();
+                   $$->attr.name = copyString(currentPos);
+     		       $$->correction = copyString("Expression error (ei 'x != 5' or '4 + 1 - 5')");
+                   $$->lineno = lineno;
+                   $$->col = col;
+     			}
             ;
 var         : saveName
-                 { //printf("in saveName\n");
+                 { $$ = newExpNode(IdK);
                    $$->attr.name = savedName;
                  }
             | saveName
                  { $$ = newExpNode(ArrIdK);
-                 //printf("after new ArrIdK\n");
                    $$->attr.name = savedName;
                  }
               LBRKT exp RBRKT
-                 { $$->child[0] = $4;
-                 //printf("back here\n");
+                 { $$=newExpNode(IdK);
+                   $$->attr.name = savedName;
                  }
             ;
 call        : saveName
