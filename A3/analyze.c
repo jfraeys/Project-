@@ -1,7 +1,7 @@
 /****************************************************/
 /* File: analyze.c                                  */
-/* Semantic analyzer implementation                 */
-/* for the TINY compiler                            */
+/* Jeremie Fraeys and Joel Klemens                  */
+/* Example of Tiny analyze.c and analyze.h          */
 /* Compiler Construction: Principles and Practice   */
 /* Kenneth C. Louden                                */
 /****************************************************/
@@ -11,19 +11,9 @@
 #include "analyze.h"
 #include "util.h"
 
-#define VOID "void"
-#define INT "int"
-
 static char * funcName;
 static int preserveLastScope = FALSE;
 
-/* counter for variable memory locations */
-
-/* Procedure traverse is a generic recursive
- * syntax tree traversal routine:
- * it applies preProc in preorder and postProc
- * in postorder to tree pointed to by tree
- */
 static void traverse(TreeNode * tree, void (* preProc) (TreeNode *), void (* postProc) (TreeNode *)){
     if (tree != NULL){
         preProc(tree);
@@ -118,7 +108,7 @@ static void insertNode( TreeNode * tree){
                 case CallK:
                     if (st_lookup(tree->attr.name) == -1){
                         /* not yet in table, error */
-                        symbolError(tree, "undlecared symbol");
+                        symbolError(tree, "undeclared symbol");
                     }
                     break;
                 default:
@@ -226,13 +216,13 @@ void buildSymTab(TreeNode * syntaxTree){
 
  static void typeError(TreeNode * tree, char * message){
     fprintf(listing,"Type error at line %d: %s\n",tree->lineno,message);
-    Error = TRUE;
+    errorFlag = TRUE;
 }
 
 static void beforeCheckNode(TreeNode * tree){
     switch (tree->nodekind){
-        case DeclK:
-            switch (tree->kind.decl){
+        case DecK:
+            switch (tree->kind.dec){
                 case FuncK:
                     funcName = tree->attr.name;
                     break;
@@ -263,15 +253,15 @@ static void checkNode(TreeNode * tree){
                 case CompK:
                     s_pop();
                     break;
-                case IterK:
+                case WhileK:
                     if (tree->child[0]->type == Void){
                         /* while test should be void function call */
                         typeError(tree->child[0],"while test has void value");
                     }
                     break;
-                case RetK:
+                case ReturnK:
                     {
-                        const TreeNode * funcDecl = st_bucket(funcName)->treeNode;
+                        const TreeNode * funcDecl = st_bucket(funcName)->tree_node;
                         const ExpType funcType = funcDecl->type;
                         const TreeNode * expr = tree->child[0];
 
@@ -289,17 +279,6 @@ static void checkNode(TreeNode * tree){
             break;
         case ExpK:
             switch (tree->kind.exp){
-                case AssignK:
-                    if (tree->child[0]->type == IntegerArray){
-                        /* no value can be assigned to array variable */
-                        typeError(tree->child[0],"assignment to array variable");
-                    }else if (tree->child[1]->type == Void){
-                        /* r-value cannot have void type */
-                        typeError(tree->child[0],"assignment of void value");
-                    }else{
-                        tree->type = tree->child[0]->type;
-                    }
-                    break;
                 case OpK:
                     {
                         ExpType leftType, rightType;
@@ -309,13 +288,15 @@ static void checkNode(TreeNode * tree){
                         rightType = tree->child[1]->type;
                         op = tree->attr.op;
 
+                        printf("%d\n", op);
+
                         if (leftType == Void || rightType == Void){
                           typeError(tree,"two operands should have non-void type");
-                        }else if (leftType == IntegerArray &&rightType == IntegerArray){
+                        }else if (leftType == IntArr &&rightType == IntArr){
                           typeError(tree,"not both of operands can be array");
-                        }else if (op == MINUS && leftType == Integer && rightType == IntegerArray){
+                        }else if ((op == MINUS || op == PLUS) && leftType == Integer && rightType == IntArr){
                           typeError(tree,"invalid operands to binary expression");
-                        }else if ((op == TIMES || op == OVER) && (leftType == IntegerArray ||rightType == IntegerArray)){
+                        }else if ((op == TIMES || op == OVER) && (leftType == IntArr ||rightType == IntArr)){
                           typeError(tree,"invalid operands to binary expression");
                         }else {
                           tree->type = Integer;
@@ -340,11 +321,11 @@ static void checkNode(TreeNode * tree){
                         if(tree->kind.exp == ArrIdK){
                             if(symbolDecl->kind.dec != ArrK && symbolDecl->kind.param != ArrParamK){
                                 typeError(tree,"expected array symbol");
+                            }else if (tree->child[0]->type != Integer){
+                                typeError(tree,"index expression should have integer type");
+                            }else{
+                                tree->type = Integer;
                             }
-                        }else if (tree->child[0]->type != Integer){
-                            typeError(tree,"index expression should have integer type");
-                        }else{
-                            tree->type = Integer;
                         }else{
                           tree->type = symbolDecl->type;
                         }
@@ -371,15 +352,7 @@ static void checkNode(TreeNode * tree){
 
                         while (arg != NULL){
                             if (param == NULL){
-                                /* the number of arguments does not match to
-                                that of parameters */
                                 typeError(arg,"the number of parameters is wrong");
-                                /*else if (arg->type == IntegerArray &&
-                                  param->type != IntegerArray)
-                                typeError(arg,"expected non-array value");
-                              else if (arg->type == Integer &&
-                                  param->type == IntegerArray)
-                                typeError(arg,"expected array value");*/
                             }else if (arg->type == Void){
                             typeError(arg,"void value cannot be passed as an argument");
                             }else {  // no problem!

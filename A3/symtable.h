@@ -58,7 +58,7 @@ void st_add_lineno(char * name, int lineno);
 int st_lookup_top(char * name);
 
 /* Return the bucket that has the matching search name */
-BucketList st_bucket(char * name);
+BucketList st_bucket(const char * name);
 
 /************ Scope functions ****************/
 /* Create new scope struct variable */

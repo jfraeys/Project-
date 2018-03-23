@@ -28,7 +28,7 @@ void main(void) {
 	return;
 }
 
-int fun_Add(int x, int y) {
+int Add(int x, int y) {
 	
 	C = x + y;
 

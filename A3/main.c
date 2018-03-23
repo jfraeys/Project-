@@ -108,7 +108,7 @@ int main( int argc, char * argv[] ) {
     }
 #endif
 #endif
-printf("bye\n");
+
     fclose(source);
     return 0;
 }

@@ -12,7 +12,7 @@
 #include "symtable.h"
 
 /* the hash function */
-static int hash ( char * key ){
+static int hash ( const char * key ){
 	int temp = 0;
   	int i = 0;
 
@@ -186,7 +186,7 @@ int st_lookup_top(char * name){
   	return -1;
 }
 
-BucketList st_bucket(char * name){
+BucketList st_bucket(const char * name){
 	int h = hash(name);
   	Scope top = s_top();
  	while(top) {
