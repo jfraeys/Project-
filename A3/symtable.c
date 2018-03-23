@@ -11,10 +11,6 @@
 #include <string.h>
 #include "symtable.h"
 
-#define SIZE 211
-#define SHIFT 4
-#define MAX_SCOPE 1000
-
 /* the hash function */
 static int hash ( char * key ){
 	int temp = 0;
@@ -32,7 +28,7 @@ static int hash ( char * key ){
 static Scope scopes[MAX_SCOPE];//Create an array of scope to hold all possible scope levels
 static int nScope = 0;
 static Scope scopeStack[MAX_SCOPE];
-static int nScopeStack = 0;
+static int nScopeStack = 1;
 static int location[MAX_SCOPE];
 
 /* Insert function */
@@ -41,11 +37,11 @@ void st_insert( char * name, int lineno, int loc, TreeNode * treeNode ){
   	Scope top = s_top();
   	BucketList list =  top->hashTable[h];
 
-	printf("%s\n", list->name);
-  	while ((list != NULL) && (strcmp(name,list->name) != 0)){
+
+	while ((list != NULL) && (strcmp(name,list->name) != 0)){
   		list = list->next;
   	}
-	printf("bye\n");
+
 
   	if (list == NULL){
   		//then it is not in the table yet and we should add it
@@ -215,6 +211,11 @@ Scope s_create(char *funcName){
   	newScope->funcName = funcName;
   	newScope->nestedLevel = nScopeStack;
   	newScope->parent = s_top();
+
+	for (int i = 0; i < SIZE; i++){
+		newScope->hashTable[i] = NULL;
+	}
+
 
   	scopes[nScope++] = newScope;
 

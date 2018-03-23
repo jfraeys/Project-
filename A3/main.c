@@ -101,13 +101,14 @@ int main( int argc, char * argv[] ) {
         printTree(syntaxTree);
     }
 #if !NO_ANALYZE
-    printf("%d\n", errorFlag);
     if(!errorFlag) {
-        buildSymTab(syntaxTree);
+        if(TraceAnalyze)
+            buildSymTab(syntaxTree);
         //typeCheck(syntaxTree);
     }
 #endif
 #endif
+printf("bye\n");
     fclose(source);
     return 0;
 }

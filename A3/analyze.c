@@ -47,7 +47,7 @@ static void insertIOFunc(void)
   func = newDecNode(FuncK);
 
   typeSpec = newDecNode(TypeNameK);
-  typeSpec->attr.type = INT;
+  typeSpec->attr.name = INT;
   func->type = Integer;
 
   compStmt = newStmtNode(CompK);
