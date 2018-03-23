@@ -36,3 +36,12 @@ the value to TRUE, the "make" will only generate a scanner.
 will generate a list of token type values in "y.tab.h", which will be used
 in "lex.yy.c" and "util.c".  Otherwise, the parser may not connect to the
 scanner properly and util.c may not display the syntax tree correctly.
+
+---------REFERENCES---------
+https://stackoverflow.com/questions/16911792/how-to-continue-parser-after-syntax-error
+https://stackoverflow.com/questions/1737460/how-to-find-shift-reduce-conflict-in-this-yacc-file
+https://github.com/isairz/cminus
+https://codereview.stackexchange.com/questions/101694/implementation-of-symbol-table-in-c
+http://www.sci.tamucc.edu/~sking/Courses/Compilers/Slides/Semantics.pdf
+https://stackoverflow.com/questions/9410/how-do-you-pass-a-function-as-a-parameter-in-c
+https://www.tutorialspoint.com/cprogramming/switch_statement_in_c.htm
