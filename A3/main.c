@@ -9,7 +9,7 @@
 #define NO_PARSE FALSE
 
 /* set NO_ANALYZE to TRUE to get a analyze-only compiler */
-#define NO_ANALYZE TRUE
+#define NO_ANALYZE FALSE
 
 #define MAX_MATCHES 1
 #define tofind_correct_file "^.*\\.(cm|CM)$"
@@ -27,6 +27,7 @@
 
 /* allocate global variables */
 int lineno = 0;
+int col = 0;
 FILE * source;
 FILE * listing;
 FILE * code;
@@ -37,7 +38,7 @@ int TraceParse = TRUE;
 int TraceAnalyze = FALSE;
 int TraceCode = FALSE;
 
-int Error = FALSE;
+int errorFlag = FALSE;
 
 int match (regex_t *exp, char *sz){
     regmatch_t matches[MAX_MATCHES];
@@ -100,12 +101,14 @@ int main( int argc, char * argv[] ) {
         printTree(syntaxTree);
     }
 #if !NO_ANALYZE
-    if(!Error) {
-        buildSynTab(syntaxTree);
-        typeCheck(syntaxTree);
+    if(!errorFlag) {
+        if(TraceAnalyze)
+            buildSymTab(syntaxTree);
+        //typeCheck(syntaxTree);
     }
 #endif
 #endif
+
     fclose(source);
     return 0;
 }

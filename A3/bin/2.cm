@@ -2,10 +2,14 @@
 /* In this test program there are a variety of errors where there are symbols used that are not
    defined in the cminus language */
 
+/*   Symantic errors */
+/*	 In the function fun_Add it adds two variable and tries to assign them to C, however, C is not defined		 in this function */ 
+
 void main(void) {
     int x;
 	int y;
-
+	int C;
+	
 	x = 5;
 	y = 10;
 
@@ -22,4 +26,11 @@ void main(void) {
     name = "Joel and Jeremie"; /* quotations are not supported */
 
 	return;
+}
+
+int Add(int x, int y) {
+	
+	C = x + y;
+
+	return C; 
 }

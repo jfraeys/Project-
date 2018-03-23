@@ -5,12 +5,12 @@
 
 CC = gcc
 
-CFLAGS = 
+CFLAGS =
 
-OBJS = y.tab.o lex.yy.o symtab.o util.o main.o
+OBJS = y.tab.o lex.yy.o analyze.o symtable.o util.o main.o
 
-tiny: $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o cminus -ly -ll
+cminus: $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $@ -ly -ll
 
 main.o: main.c globals.h util.h scan.h parse.h
 	$(CC) $(CFLAGS) -c $<
@@ -18,7 +18,10 @@ main.o: main.c globals.h util.h scan.h parse.h
 util.o: util.c util.h globals.h y.tab.h
 	$(CC) $(CFLAGS) -c $<
 
-symtab.o: symtable.c symtable.h
+analyze.o: analyze.c globals.h symtable.h analyze.h
+	$(CC) $(CFLAGS) -c analyze.c
+
+symtable.o: symtable.c symtable.h
 		$(CC) $(CFLAGS) -c $<
 
 lex.yy.c: cminus.l

@@ -27,17 +27,17 @@ extern FILE* source; /* source code text file */
 extern FILE* listing; /* listing output text file */
 extern FILE* code; /* code text file for TM simulator */
 extern int lineno; /* source line number for listing */
+extern int col; /*source column number for listing*/
 
 /**************************************************/
 /***********   Syntax tree for parsing ************/
 /**************************************************/
 
-typedef enum {StmtK, ExpK, DecK, ParamK, TypeK} NodeKind;
+typedef enum {StmtK, ExpK, DecK, ParamK, TypeK, Error} NodeKind;
 typedef enum {CompK, IfK, ReturnK, WhileK} StmtKind;
 typedef enum {OpK, ConstK, IdK, SubsK, CallK, ArrIdK} ExpKind;
-typedef enum {FuncK, VarK, ArrK} DecKind;
+typedef enum {FuncK, VarK, ArrK, TypeNameK} DecKind;
 typedef enum {ArrParamK, NonArrParamK} ParamKind;
-typedef enum {TypeNameK} TypeKind;
 
 typedef struct arrAttr{
     TokenType type;
@@ -45,7 +45,6 @@ typedef struct arrAttr{
     int size;
 }ArrAttr;
 
-/* ExpType is used for type checking */
 typedef enum {Void,Integer,Boolean, IntArr} ExpType;
 
 #define MAXCHILDREN 3
@@ -54,20 +53,21 @@ typedef struct treeNode
    { struct treeNode * child[MAXCHILDREN];
      struct treeNode * sibling;
      int lineno;
+     int col;
+     char * correction;
      NodeKind nodekind;
      union { StmtKind stmt;
              ExpKind exp;
              DecKind dec;
-             ParamKind param;
-             TypeKind type;} kind;
+             ParamKind param;} kind;
      union { int op;
-             TokenType type;
+             char * type;
              int val;
              char * name;
              ArrAttr arr;
              struct ScopeRec * scope;} attr;
      ExpType type; /* for type checking of exps */
-   } TreeNode;
+  } TreeNode;
 
 /**************************************************/
 /***********   Flags for tracing       ************/
@@ -95,6 +95,6 @@ extern int TraceAnalyze;
  */
 extern int TraceCode;
 
-extern int Error;
+extern int errorFlag;
 
 #endif
