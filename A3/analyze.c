@@ -219,202 +219,198 @@ void buildSymTab(TreeNode * syntaxTree){
     s_pop();
 
     if (TraceAnalyze){
-        fprintf(listing,"\nSymbol table:\n\n");
+    fprintf(listing,"\nSymbol table:\n\n");
         st_print(listing);
     }
 }
 
-// static void typeError(TreeNode * tree, char * message)
-// { fprintf(listing,"Type error at line %d: %s\n",tree->lineno,message);
-//   Error = TRUE;
-// }
-//
-// static void beforeCheckNode(TreeNode * tree)
-// { switch (tree->nodekind)
-//   { case DeclK:
-//       switch (tree->kind.decl)
-//       { case FuncK:
-//           funcName = tree->attr.name;
-//           break;
-//         default:
-//           break;
-//       }
-//       break;
-//     case StmtK:
-//       switch (tree->kind.stmt)
-//       { case CompK:
-//           s_push(tree->attr.scope);
-//           break;
-//         default:
-//           break;
-//       }
-//     default:
-//       break;
-//   }
-// }
-//
-// /* Procedure checkNode performs
-//  * type checking at a single tree node
-//  */
-// static void checkNode(TreeNode * tree)
-// { switch (tree->nodekind)
-//   { case StmtK:
-//       switch (tree->kind.stmt)
-//       { case CompK:
-//           s_pop();
-//           break;
-//         case IterK:
-//           if (tree->child[0]->type == Void)
-//           /* while test should be void function call */
-//             typeError(tree->child[0],"while test has void value");
-//           break;
-//         case RetK:
-//           { const TreeNode * funcDecl =
-//                 st_bucket(funcName)->treeNode;
-//             const ExpType funcType = funcDecl->type;
-//             const TreeNode * expr = tree->child[0];
-//
-//             if (funcType == Void &&
-//                 (expr != NULL && expr->type != Void)) {
-//               typeError(tree,"expected no return value");
-//               //ValueReturned = TRUE;
-//             } else if (funcType == Integer &&
-//                 (expr == NULL || expr->type == Void)) {
-//               typeError(tree,"expected return value");
-//             }
-//           }
-//           break;
-//         default:
-//           break;
-//       }
-//       break;
-//     case ExpK:
-//       switch (tree->kind.exp)
-//       { case AssignK:
-//           if (tree->child[0]->type == IntegerArray)
-//           /* no value can be assigned to array variable */
-//             typeError(tree->child[0],"assignment to array variable");
-//           else if (tree->child[1]->type == Void)
-//           /* r-value cannot have void type */
-//             typeError(tree->child[0],"assignment of void value");
-//           else
-//             tree->type = tree->child[0]->type;
-//           break;
-//         case OpK:
-//           { ExpType leftType, rightType;
-//             TokenType op;
-//
-//             leftType = tree->child[0]->type;
-//             rightType = tree->child[1]->type;
-//             op = tree->attr.op;
-//
-//             if (leftType == Void ||
-//                 rightType == Void)
-//               typeError(tree,"two operands should have non-void type");
-//             else if (leftType == IntegerArray &&
-//                 rightType == IntegerArray)
-//               typeError(tree,"not both of operands can be array");
-//             else if (op == MINUS &&
-//                 leftType == Integer &&
-//                 rightType == IntegerArray)
-//               typeError(tree,"invalid operands to binary expression");
-//             else if ((op == TIMES || op == OVER) &&
-//                 (leftType == IntegerArray ||
-//                  rightType == IntegerArray))
-//               typeError(tree,"invalid operands to binary expression");
-//             else {
-//               tree->type = Integer;
-//             }
-//           }
-//           break;
-//         case ConstK:
-//           tree->type = Integer;
-//           break;
-//         case IdK:
-//         case ArrIdK:
-//           { const char *symbolName = tree->attr.name;
-//             const BucketList bucket =
-//                 st_bucket(symbolName);
-//             TreeNode *symbolDecl = NULL;
-//
-//             if (bucket == NULL)
-//               break;
-//             symbolDecl = bucket->tree_node;
-//
-//             if (tree->kind.exp == ArrIdK) {
-//               if (symbolDecl->kind.dec != ArrK &&
-//                   symbolDecl->kind.param != ArrParamK)
-//                 typeError(tree,"expected array symbol");
-//               else if (tree->child[0]->type != Integer)
-//                 typeError(tree,"index expression should have integer type");
-//               else
-//                 tree->type = Integer;
-//             } else {
-//               tree->type = symbolDecl->type;
-//             }
-//           }
-//           break;
-//         case CallK:
-//           { const char *callingFuncName = tree->attr.name;
-//             const TreeNode * funcDecl = st_bucket(callingFuncName)->tree_node;
-//             TreeNode *arg;
-//             TreeNode *param;
-//
-//             if (funcDecl == NULL)
-//               break;
-//
-//             arg = tree->child[0];
-//             param = funcDecl->child[1];
-//
-//             if (funcDecl->kind.dec != FuncK)
-//             { typeError(tree,"expected function symbol");
-//               break;
-//             }
-//
-//             while (arg != NULL)
-//             { if (param == NULL)
-//               /* the number of arguments does not match to
-//                  that of parameters */
-//                 typeError(arg,"the number of parameters is wrong");
-//               /*else if (arg->type == IntegerArray &&
-//                   param->type != IntegerArray)
-//                 typeError(arg,"expected non-array value");
-//               else if (arg->type == Integer &&
-//                   param->type == IntegerArray)
-//                 typeError(arg,"expected array value");*/
-//               else if (arg->type == Void)
-//                 typeError(arg,"void value cannot be passed as an argument");
-//               else {  // no problem!
-//                 arg = arg->sibling;
-//                 param = param->sibling;
-//                 continue;
-//               }
-//               /* any problem */
-//               break;
-//             }
-//
-//             if (arg == NULL && param != NULL)
-//             /* the number of arguments does not match to
-//                that of parameters */
-//               typeError(tree->child[0],"the number of parameters is wrong");
-//
-//             tree->type = funcDecl->type;
-//           }
-//           break;
-//         default:
-//           break;
-//       }
-//       break;
-//     default:
-//       break;
-//   }
-// }
+ static void typeError(TreeNode * tree, char * message){ 
+    fprintf(listing,"Type error at line %d: %s\n",tree->lineno,message);
+    Error = TRUE;
+}
+
+static void beforeCheckNode(TreeNode * tree){
+    switch (tree->nodekind){
+        case DeclK:
+            switch (tree->kind.decl){ 
+                case FuncK:
+                    funcName = tree->attr.name;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case StmtK:
+            switch (tree->kind.stmt){
+               case CompK:
+                    s_push(tree->attr.scope);
+                    break;
+                default:
+                    break;
+            }
+        default:
+            break;
+    }
+}
+
+/* Procedure checkNode performs
+ * type checking at a single tree node
+ */
+static void checkNode(TreeNode * tree){
+    switch (tree->nodekind){
+        case StmtK:
+            switch (tree->kind.stmt){
+                case CompK:
+                    s_pop();
+                    break;
+                case IterK:
+                    if (tree->child[0]->type == Void){
+                        /* while test should be void function call */
+                        typeError(tree->child[0],"while test has void value");
+                    }
+                    break;
+                case RetK:
+                    {
+                        const TreeNode * funcDecl = st_bucket(funcName)->treeNode;
+                        const ExpType funcType = funcDecl->type;
+                        const TreeNode * expr = tree->child[0];
+
+                        if (funcType == Void &&(expr != NULL && expr->type != Void)) {
+                            typeError(tree,"expected no return value");
+                             //ValueReturned = TRUE;
+                        } else if (funcType == Integer &&(expr == NULL || expr->type == Void)) {
+                            typeError(tree,"expected return value");
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case ExpK:
+            switch (tree->kind.exp){
+                case AssignK:
+                    if (tree->child[0]->type == IntegerArray){
+                        /* no value can be assigned to array variable */
+                        typeError(tree->child[0],"assignment to array variable");
+                    }else if (tree->child[1]->type == Void){
+                        /* r-value cannot have void type */
+                        typeError(tree->child[0],"assignment of void value");
+                    }else{
+                        tree->type = tree->child[0]->type;
+                    }
+                    break;
+                case OpK:
+                    { 
+                        ExpType leftType, rightType;
+                        TokenType op;
+
+                        leftType = tree->child[0]->type;
+                        rightType = tree->child[1]->type;
+                        op = tree->attr.op;
+
+                        if (leftType == Void || rightType == Void){
+                          typeError(tree,"two operands should have non-void type");
+                        }else if (leftType == IntegerArray &&rightType == IntegerArray){
+                          typeError(tree,"not both of operands can be array");
+                        }else if (op == MINUS && leftType == Integer && rightType == IntegerArray){
+                          typeError(tree,"invalid operands to binary expression");
+                        }else if ((op == TIMES || op == OVER) && (leftType == IntegerArray ||rightType == IntegerArray)){
+                          typeError(tree,"invalid operands to binary expression");
+                        }else {
+                          tree->type = Integer;
+                        }
+                    }
+                    break;
+                case ConstK:
+                    tree->type = Integer;
+                    break;
+                case IdK:
+                case ArrIdK:
+                    { 
+                        const char *symbolName = tree->attr.name;
+                        const BucketList bucket = st_bucket(symbolName);
+                        TreeNode *symbolDecl = NULL;
+
+                        if (bucket == NULL){
+                            break;
+                        }
+                        symbolDecl = bucket->tree_node;
+
+                        if(tree->kind.exp == ArrIdK){
+                            if(symbolDecl->kind.dec != ArrK && symbolDecl->kind.param != ArrParamK){
+                                typeError(tree,"expected array symbol");
+                            }
+                        }else if (tree->child[0]->type != Integer){
+                            typeError(tree,"index expression should have integer type");
+                        }else{
+                            tree->type = Integer;
+                        }else{
+                          tree->type = symbolDecl->type;
+                        }
+                    }
+                    break;
+                case CallK:
+                    { 
+                        const char *callingFuncName = tree->attr.name;
+                        const TreeNode * funcDecl = st_bucket(callingFuncName)->tree_node;
+                        TreeNode *arg;
+                        TreeNode *param;
+
+                        if (funcDecl == NULL){
+                          break;
+                        }
+
+                        arg = tree->child[0];
+                        param = funcDecl->child[1];
+
+                        if (funcDecl->kind.dec != FuncK){ 
+                            typeError(tree,"expected function symbol");
+                            break;
+                        }
+
+                        while (arg != NULL){ 
+                            if (param == NULL){
+                                /* the number of arguments does not match to
+                                that of parameters */
+                                typeError(arg,"the number of parameters is wrong");
+                                /*else if (arg->type == IntegerArray &&
+                                  param->type != IntegerArray)
+                                typeError(arg,"expected non-array value");
+                              else if (arg->type == Integer &&
+                                  param->type == IntegerArray)
+                                typeError(arg,"expected array value");*/
+                            }else if (arg->type == Void){
+                            typeError(arg,"void value cannot be passed as an argument");
+                            }else {  // no problem!
+                                arg = arg->sibling;
+                                param = param->sibling;
+                                continue;
+                            }
+                            break;
+                        }
+                        if (arg == NULL && param != NULL){
+                            /* the number of arguments does not match to
+                               that of parameters */
+                            typeError(tree->child[0],"the number of parameters is wrong");
+                        }
+                        tree->type = funcDecl->type;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
 
 /* Procedure typeCheck performs type checking
  * by a postorder syntax tree traversal
  */
-// void typeCheck(TreeNode * syntaxTree)
-// { s_push(globalScope);
-//   traverse(syntaxTree,beforeCheckNode,checkNode);
-//   s_pop();
-// }
+void typeCheck(TreeNode * syntaxTree){ 
+    s_push(globalScope);
+    traverse(syntaxTree,beforeCheckNode,checkNode);
+    s_pop();
+}
