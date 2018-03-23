@@ -80,10 +80,6 @@ static void symbolError(TreeNode * tree, char * message){
     errorFlag = TRUE;
 }
 
-/* Procedure insertNode inserts
- * identifiers stored in tree into
- * the symbol table
- */
 static void insertNode( TreeNode * tree){
     switch (tree->nodekind){
         case StmtK:
@@ -198,9 +194,6 @@ static void afterInsertNode( TreeNode * tree ){
     }
 }
 
-/* Function buildSymtab constructs the symbol
- * table by preorder traversal of the syntax tree
- */
 void buildSymTab(TreeNode * syntaxTree){
     globalScope = s_create(NULL);
     s_push(globalScope);
@@ -243,9 +236,6 @@ static void beforeCheckNode(TreeNode * tree){
     }
 }
 
-/* Procedure checkNode performs
- * type checking at a single tree node
- */
 static void checkNode(TreeNode * tree){
     switch (tree->nodekind){
         case StmtK:
@@ -379,9 +369,6 @@ static void checkNode(TreeNode * tree){
     }
 }
 
-/* Procedure typeCheck performs type checking
- * by a postorder syntax tree traversal
- */
 void typeCheck(TreeNode * syntaxTree){
     s_push(globalScope);
     traverse(syntaxTree,beforeCheckNode,checkNode);

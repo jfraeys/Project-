@@ -1,14 +1,13 @@
 Jeremie Fraeys 0892019
 Joel Klemens 0895223
 CIS 4650: Compiler
-March 6th, 2018
+March 22th, 2018
 
 CMINUS SCANNER AND PARSER
 
 ---------DESCRIPTION---------
 
-This program is a cminus scanner and parser coded in C using flex and yacc as support tools. The program will accept CMinus(.cm)
-files and return the compilation list and the syntax tree.
+This program is a cminus scanner and parser coded in C using flex and yacc as support tools. It also inludes a symbol table and Semantic Error handling. The program will accept CMinus(.cm) files and return the compilation list, the syntax tree, symentic error and if "-s" is used it will return a symbol table.
 
 ---------HOW TO RUN---------
 
@@ -18,10 +17,12 @@ for the C minus language.
    To build the parser, type "make" in the current directory, which will
 generate an executable program called "cm".
 
-   To test source code like "fac.cm", type "./cm fac.cm" and the syntax
+   To test source code like "fac.cm", type "./cm <testfile>.cm" and the syntax
 tree will be displayed on the screen.
 
    To rebuild the parser, type "make clean" and type "make" again.
+
+   To display symbol table use "-s" flag as an argument.
 
 ---------ADDITIONAL INFORMATION---------
 
